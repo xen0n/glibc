@@ -1,5 +1,14 @@
 2016-05-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/unix/sysv/linux/i386/fcntl.c (NO_CANCELLATION): Replace
+	by IS_IN (rtld).
+	* sysdeps/unix/sysv/linux/powerpc/powerpc32/sysdep-cancel.h (PSEUDO):
+	Redefine to call __syscall_cancel function for cancellable syscalls.
+	(__pthread_get_ip): Add implementation.
+	* sysdeps/unix/sysv/linux/powerpc/powerpc32/sysdep.h
+	[SYSCALL_CANCEL_ERROR]: New macro.
+	[SYSCALL_CANCEL_ERRNO]: New macro.
+
 	* sysdeps/i386/nptl/tls.h (THREAD_ATOMIC_BIT_SET): Remove macro.
 	* sysdeps/unix/sysv/linux/i386/Makefile
 	[$(subdir) = elf] (sysdep-rtld_routines): Add libc-do-syscall object.
