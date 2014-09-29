@@ -24,53 +24,43 @@
 
 #if IS_IN (libc) || IS_IN (libpthread) || IS_IN (librt)
 
-/* The code to disable cancellation depends on the fact that the called
-   functions are special.  They don't modify registers other than %rax
-   and %r11 if they return.  Therefore we don't have to preserve other
-   registers around these calls.  */
+# if IS_IN (libc)
+#  define JMP_SYSCALL_CANCEL HIDDEN_JUMPTARGET(__syscall_cancel)
+# else
+#  define JMP_SYSCALL_CANCEL __syscall_cancel@plt
+# endif
+
 # undef PSEUDO
 # define PSEUDO(name, syscall_name, args)				      \
   .text;								      \
   ENTRY (name)								      \
     SINGLE_THREAD_P;							      \
     jne L(pseudo_cancel);						      \
-  .type __##syscall_name##_nocancel,@function;				      \
-  .globl __##syscall_name##_nocancel;					      \
-  __##syscall_name##_nocancel:						      \
     DO_CALL (syscall_name, args);					      \
     cmpq $-4095, %rax;							      \
     jae SYSCALL_ERROR_LABEL;						      \
     ret;								      \
-  .size __##syscall_name##_nocancel,.-__##syscall_name##_nocancel;	      \
   L(pseudo_cancel):							      \
-    /* We always have to align the stack before calling a function.  */	      \
-    subq $8, %rsp; cfi_adjust_cfa_offset (8);				      \
-    CENABLE								      \
-    /* The return value from CENABLE is argument for CDISABLE.  */	      \
-    movq %rax, (%rsp);							      \
-    DO_CALL (syscall_name, args);					      \
-    movq (%rsp), %rdi;							      \
-    /* Save %rax since it's the error code from the syscall.  */	      \
-    movq %rax, %rdx;							      \
-    CDISABLE								      \
-    movq %rdx, %rax;							      \
-    addq $8,%rsp; cfi_adjust_cfa_offset (-8);				      \
-    cmpq $-4095, %rax;							      \
-    jae SYSCALL_ERROR_LABEL
-
+    subq  $24, %rsp;							      \
+    cfi_def_cfa_offset (32);						      \
+    movq  %r9, (%rsp);							      \
+    movq  %r8, %r9;							      \
+    movq  %rcx, %r8;							      \
+    movq  %rdx, %rcx;							      \
+    movq  %rsi, %rdx;							      \
+    movq  %rdi, %rsi;							      \
+    lea   SYS_ify (syscall_name), %edi;					      \
+    call  JMP_SYSCALL_CANCEL;						      \
+    cfi_def_cfa_offset (8);						      \
+    addq  $24, %rsp;							      \
+    cmpq  $-4095, %rax;							      \
+    jae SYSCALL_ERROR_LABEL;
 
 # if IS_IN (libpthread)
-#  define CENABLE	call __pthread_enable_asynccancel;
-#  define CDISABLE	call __pthread_disable_asynccancel;
 #  define __local_multiple_threads __pthread_multiple_threads
 # elif IS_IN (libc)
-#  define CENABLE	call __libc_enable_asynccancel;
-#  define CDISABLE	call __libc_disable_asynccancel;
 #  define __local_multiple_threads __libc_multiple_threads
-# elif IS_IN (librt)
-#  define CENABLE	call __librt_enable_asynccancel;
-#  define CDISABLE	call __librt_disable_asynccancel;
-# else
+# elif !IS_IN (librt)
 #  error Unsupported library
 # endif
 
@@ -78,7 +68,7 @@
 #  ifndef __ASSEMBLER__
 extern int __local_multiple_threads attribute_hidden;
 #   define SINGLE_THREAD_P \
-  __builtin_expect (__local_multiple_threads == 0, 1)
+	  __builtin_expect (__local_multiple_threads == 0, 1)
 #  else
 #   define SINGLE_THREAD_P cmpl $0, __local_multiple_threads(%rip)
 #  endif
@@ -87,18 +77,13 @@ extern int __local_multiple_threads attribute_hidden;
 
 #  ifndef __ASSEMBLER__
 #   define SINGLE_THREAD_P \
-  __builtin_expect (THREAD_GETMEM (THREAD_SELF, \
-				   header.multiple_threads) == 0, 1)
+	  __builtin_expect (THREAD_GETMEM (THREAD_SELF, \
+					   header.multiple_threads) == 0, 1)
 #  else
 #   define SINGLE_THREAD_P cmpl $0, %fs:MULTIPLE_THREADS_OFFSET
-#  endif
+#  endif /* __ASSEMBLER  */
 
-# endif
-
-#elif !defined __ASSEMBLER__
-
-# define SINGLE_THREAD_P (1)
-# define NO_CANCELLATION 1
+# endif /* IS_IN (libpthread) || IS_IN (libc)  */
 
 #endif
 
@@ -106,4 +91,10 @@ extern int __local_multiple_threads attribute_hidden;
 # define RTLD_SINGLE_THREAD_P \
   __builtin_expect (THREAD_GETMEM (THREAD_SELF, \
 				   header.multiple_threads) == 0, 1)
+
+static inline
+uintptr_t __pthread_get_pc (const ucontext_t *uc)
+{
+  return (long int)uc->uc_mcontext.gregs[REG_RIP];
+}
 #endif

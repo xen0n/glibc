@@ -1,5 +1,25 @@
 2016-05-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/unix/sysv/linux/x86_64/cancellation.S: Remove file.
+	* sysdeps/unix/sysv/linux/x86_64/libc-cancellation.S: Remove file.
+	* sysdeps/unix/sysv/linux/x86_64/librt-cancellation.S: Remove file.
+	* sysdeps/unix/sysv/linux/x86_64/lowlevellock.h (lll_wait_tid):
+	Use cancellable futex wait call.
+	* sysdeps/unix/sysv/linux/x86_64/sysdep-cancel.h (PSEUDO): Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S: New file.
+	* sysdeps/unix/sysv/linux/x86_64/sysdep-cancel.h (PSEUDO): Redefine to
+	call __syscall_cancel function for cancellable syscalls.
+	(CENABLE): Remove definition.
+	(CDISABLE): Likewise.
+	(__pthread_get_ip): Add implementation.
+	* sysdeps/unix/sysv/linux/x86_64/sysdep.h (SYSCALL_CANCEL_ERROR): New
+	define.
+	(SYSCALL_CANCEL_ERRNO): Likewise.
+	* sysdeps/x86_64/nptl/tcb-offsets.sym [TCB_CANCELING_BITMASK]:
+	Remove.
+	* sysdeps/x86_64/nptl/tls.h (THREAD_ATOMIC_BIT_SET): Remove
+	macro.
+
 	* sysdeps/unix/sysv/linux/powerpc/powerpc64/fcntl.c (__libc_fnctl):
 	Remove CANCEL_ASYNC/CANCEL_RESET usage.
 	* sysdeps/unix/sysv/linux/powerpc/powerpc64/sysdep-cancel.h (PSEUDO):
