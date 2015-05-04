@@ -86,13 +86,35 @@
     sc_ret;								\
   })
 
-#define SOCKETCALL_CANCEL(name, __a1, __a2, __a3, __a4, __a5, __a6)	\
+
+#define __SOCKETCALL_CANCEL1(__name, __a1) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [1]) { (long int) __a1 }))
+#define __SOCKETCALL_CANCEL2(__name, __a1, __a2) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [2]) { (long int) __a1, (long int) __a2 }))
+#define __SOCKETCALL_CANCEL3(__name, __a1, __a2, __a3) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [3]) { (long int) __a1, (long int) __a2, (long int) __a3 }))
+#define __SOCKETCALL_CANCEL4(__name, __a1, __a2, __a3, __a4) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [4]) { (long int) __a1, (long int) __a2, (long int) __a3, \
+                       (long int) __a4 }))
+#define __SOCKETCALL_CANCEL5(__name, __a1, __a2, __a3, __a4, __a5) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [5]) { (long int) __a1, (long int) __a2, (long int) __a3, \
+                       (long int) __a4, (long int) __a5 }))
+#define __SOCKETCALL_CANCEL6(__name, __a1, __a2, __a3, __a4, __a5, __a6) \
+  SYSCALL_CANCEL_NCS (socketcall, __name, \
+     ((long int [6]) { (long int) __a1, (long int) __a2, (long int) __a3, \
+                       (long int) __a4, (long int) __a5, (long int) __a6 }))
+
+#define __SOCKETCALL_CANCEL(...) __SOCKETCALL_DISP (__SOCKETCALL_CANCEL,\
+						    __VA_ARGS__)
+
+#define SOCKETCALL_CANCEL(name, args...)				\
   ({									\
-    __syscall_arg_t __args[6] = { __SSC (__a1), __SSC (__a2),		\
-				  __SSC (__a3), __SSC (__a4), 		\
-				  __SSC (__a5), __SSC (__a6) };		\
-    long int sc_ret = SYSCALL_CANCEL_NCS (socketcall, SOCKOP_##name,	\
-					  __args);			\
+    long int sc_ret = __SOCKETCALL_CANCEL (SOCKOP_##name, args);	\
     if (SYSCALL_CANCEL_ERROR (sc_ret))					\
       {									\
         __set_errno (SYSCALL_CANCEL_ERRNO (sc_ret));			\

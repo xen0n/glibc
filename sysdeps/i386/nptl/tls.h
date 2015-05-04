@@ -395,17 +395,6 @@ tls_fill_user_desc (union user_desc_init *desc,
 	      abort (); })
 
 
-/* Atomic set bit.  */
-#define THREAD_ATOMIC_BIT_SET(descr, member, bit) \
-  (void) ({ if (sizeof ((descr)->member) == 4)				      \
-	      asm volatile (LOCK_PREFIX "orl %1, %%gs:%P0"		      \
-			    :: "i" (offsetof (struct pthread, member)),	      \
-			       "ir" (1 << (bit)));			      \
-	    else							      \
-	      /* Not necessary for other sizes in the moment.  */	      \
-	      abort (); })
-
-
 /* Call the user-provided thread function.  */
 #define CALL_THREAD_FCT(descr) \
   ({ void *__res;							      \

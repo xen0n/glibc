@@ -19,6 +19,7 @@ CFLAGS-semtimedop.os += -fomit-frame-pointer
 endif
 
 ifeq ($(subdir),elf)
+sysdep-rtld_routines += libc-do-syscall
 sysdep-others += lddlibc4
 install-bin += lddlibc4
 endif

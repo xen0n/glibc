@@ -492,6 +492,14 @@ struct libc_do_syscall_args
 #undef INTERNAL_SYSCALL_ERRNO
 #define INTERNAL_SYSCALL_ERRNO(val, err)	(-(val))
 
+#undef SYSCALL_CANCEL_ERROR
+#define SYSCALL_CANCEL_ERROR(__val) \
+  ((unsigned int) (__val) >= 0xfffff001u)
+
+#undef SYSCALL_CANCEL_ERRNO
+#define SYSCALL_CANCEL_ERRNO(__val) \
+  (-(__val))
+
 #define LOADARGS_0
 #ifdef __PIC__
 # if defined I386_USE_SYSENTER && defined SHARED

@@ -24,112 +24,66 @@
 
 #if IS_IN (libc) || IS_IN (libpthread) || IS_IN (librt)
 
+# if IS_IN (libc)
+#  define JMP_STARTFUNC							      \
+    subl $16, %esp
+#  define JMP_SYSCALL_CANCEL						      \
+    HIDDEN_JUMPTARGET(__syscall_cancel)
+#  define JMP_ENDFUNC							      \
+    addl $44, %esp;							      \
+    cfi_def_cfa_offset (4)
+# else
+#  define JMP_STARTFUNC							      \
+    pushl %ebx;								      \
+    cfi_def_cfa_offset (8);						      \
+    cfi_offset (ebx, -8);						      \
+    SETUP_PIC_REG (bx);							      \
+    addl $_GLOBAL_OFFSET_TABLE_, %ebx;					      \
+    subl $12, %esp
+#  define JMP_SYSCALL_CANCEL \
+    __syscall_cancel@plt
+#  define JMP_ENDFUNC							      \
+    addl $40, %esp;							      \
+    cfi_def_cfa_offset (8);						      \
+    popl %ebx;								      \
+    cfi_restore (ebx);							      \
+    cfi_def_cfa_offset (4)
+# endif
+
 # undef PSEUDO
 # define PSEUDO(name, syscall_name, args)				      \
   .text;								      \
   ENTRY (name)								      \
     cmpl $0, %gs:MULTIPLE_THREADS_OFFSET;				      \
     jne L(pseudo_cancel);						      \
-  .type __##syscall_name##_nocancel,@function;				      \
-  .globl __##syscall_name##_nocancel;					      \
-  __##syscall_name##_nocancel:						      \
     DO_CALL (syscall_name, args);					      \
     cmpl $-4095, %eax;							      \
     jae SYSCALL_ERROR_LABEL;						      \
     ret;								      \
-  .size __##syscall_name##_nocancel,.-__##syscall_name##_nocancel;	      \
   L(pseudo_cancel):							      \
-    CENABLE								      \
-    SAVE_OLDTYPE_##args							      \
-    PUSHCARGS_##args							      \
-    DOCARGS_##args							      \
-    movl $SYS_ify (syscall_name), %eax;					      \
-    ENTER_KERNEL;							      \
-    POPCARGS_##args;							      \
-    POPSTATE_##args							      \
+    JMP_STARTFUNC;							      \
+    cfi_def_cfa_offset (20);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (24);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (28);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (32);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (36);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (40);						      \
+    pushl 40(%esp);							      \
+    cfi_def_cfa_offset (44);						      \
+    pushl $SYS_ify (syscall_name);					      \
+    cfi_def_cfa_offset (48);						      \
+    call JMP_SYSCALL_CANCEL;						      \
+    JMP_ENDFUNC;							      \
     cmpl $-4095, %eax;							      \
     jae SYSCALL_ERROR_LABEL
 
-# define SAVE_OLDTYPE_0	movl %eax, %ecx;
-# define SAVE_OLDTYPE_1	SAVE_OLDTYPE_0
-# define SAVE_OLDTYPE_2	pushl %eax; cfi_adjust_cfa_offset (4);
-# define SAVE_OLDTYPE_3	SAVE_OLDTYPE_2
-# define SAVE_OLDTYPE_4	SAVE_OLDTYPE_2
-# define SAVE_OLDTYPE_5	SAVE_OLDTYPE_2
-# define SAVE_OLDTYPE_6	SAVE_OLDTYPE_2
-
-# define PUSHCARGS_0	/* No arguments to push.  */
-# define DOCARGS_0	/* No arguments to frob.  */
-# define POPCARGS_0	/* No arguments to pop.  */
-# define _PUSHCARGS_0	/* No arguments to push.  */
-# define _POPCARGS_0	/* No arguments to pop.  */
-
-# define PUSHCARGS_1	movl %ebx, %edx; cfi_register (ebx, edx); PUSHCARGS_0
-# define DOCARGS_1	_DOARGS_1 (4)
-# define POPCARGS_1	POPCARGS_0; movl %edx, %ebx; cfi_restore (ebx);
-# define _PUSHCARGS_1	pushl %ebx; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (ebx, 0); _PUSHCARGS_0
-# define _POPCARGS_1	_POPCARGS_0; popl %ebx; \
-			cfi_adjust_cfa_offset (-4); cfi_restore (ebx);
-
-# define PUSHCARGS_2	PUSHCARGS_1
-# define DOCARGS_2	_DOARGS_2 (12)
-# define POPCARGS_2	POPCARGS_1
-# define _PUSHCARGS_2	_PUSHCARGS_1
-# define _POPCARGS_2	_POPCARGS_1
-
-# define PUSHCARGS_3	_PUSHCARGS_2
-# define DOCARGS_3	_DOARGS_3 (20)
-# define POPCARGS_3	_POPCARGS_3
-# define _PUSHCARGS_3	_PUSHCARGS_2
-# define _POPCARGS_3	_POPCARGS_2
-
-# define PUSHCARGS_4	_PUSHCARGS_4
-# define DOCARGS_4	_DOARGS_4 (28)
-# define POPCARGS_4	_POPCARGS_4
-# define _PUSHCARGS_4	pushl %esi; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (esi, 0); _PUSHCARGS_3
-# define _POPCARGS_4	_POPCARGS_3; popl %esi; \
-			cfi_adjust_cfa_offset (-4); cfi_restore (esi);
-
-# define PUSHCARGS_5	_PUSHCARGS_5
-# define DOCARGS_5	_DOARGS_5 (36)
-# define POPCARGS_5	_POPCARGS_5
-# define _PUSHCARGS_5	pushl %edi; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (edi, 0); _PUSHCARGS_4
-# define _POPCARGS_5	_POPCARGS_4; popl %edi; \
-			cfi_adjust_cfa_offset (-4); cfi_restore (edi);
-
-# define PUSHCARGS_6	_PUSHCARGS_6
-# define DOCARGS_6	_DOARGS_6 (44)
-# define POPCARGS_6	_POPCARGS_6
-# define _PUSHCARGS_6	pushl %ebp; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (ebp, 0); _PUSHCARGS_5
-# define _POPCARGS_6	_POPCARGS_5; popl %ebp; \
-			cfi_adjust_cfa_offset (-4); cfi_restore (ebp);
-
-# if IS_IN (libpthread)
-#  define CENABLE	call __pthread_enable_asynccancel;
-#  define CDISABLE	call __pthread_disable_asynccancel
-# elif IS_IN (libc)
-#  define CENABLE	call __libc_enable_asynccancel;
-#  define CDISABLE	call __libc_disable_asynccancel
-# elif IS_IN (librt)
-#  define CENABLE	call __librt_enable_asynccancel;
-#  define CDISABLE	call __librt_disable_asynccancel
-# else
-#  error Unsupported library
-# endif
-# define POPSTATE_0 \
- pushl %eax; cfi_adjust_cfa_offset (4); movl %ecx, %eax; \
- CDISABLE; popl %eax; cfi_adjust_cfa_offset (-4);
-# define POPSTATE_1	POPSTATE_0
-# define POPSTATE_2	xchgl (%esp), %eax; CDISABLE; popl %eax; \
-			cfi_adjust_cfa_offset (-4);
-# define POPSTATE_3	POPSTATE_2
-# define POPSTATE_4	POPSTATE_3
-# define POPSTATE_5	POPSTATE_4
-# define POPSTATE_6	POPSTATE_5
+# undef PSEUDO_RET
+# define PSEUDO_RET
 
 # ifndef __ASSEMBLER__
 #  define SINGLE_THREAD_P \
@@ -150,4 +104,10 @@
 # define RTLD_SINGLE_THREAD_P \
   __builtin_expect (THREAD_GETMEM (THREAD_SELF, \
 				   header.multiple_threads) == 0, 1)
+
+static inline
+uintptr_t __pthread_get_pc (const ucontext_t *uc)
+{
+  return (long int)uc->uc_mcontext.gregs[REG_EIP];
+}
 #endif

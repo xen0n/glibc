@@ -1,5 +1,27 @@
 2016-05-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/i386/nptl/tls.h (THREAD_ATOMIC_BIT_SET): Remove macro.
+	* sysdeps/unix/sysv/linux/i386/Makefile
+	[$(subdir) = elf] (sysdep-rtld_routines): Add libc-do-syscall object.
+	* sysdeps/unix/sysv/linux/i386/fcntl.c (NO_CANCELLATION): Replace
+	by IS_IN (rtld).
+	* sysdeps/unix/sysv/linux/i386/lowlevellock.h (lll_wait_tid): Use
+	cancellable futex syscall macro.
+	* sysdeps/unix/sysv/linux/i386/syscall_cancel.S: New file.
+	* sysdeps/unix/sysv/linux/i386/sysdep-cancel.h (PSEUDO): Redefine to
+	call __syscall_cancel function for cancellable syscalls.
+	* sysdeps/unix/sysv/linux/i386/sysdep.h (SYSCALL_CANCEL_ERROR): New
+	define.
+	(SYSCALL_CANCEL_ERRNO): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_0): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_1): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_2): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_3): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_4): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_5): Likewise.
+	(INTERNAL_SYSCALL_MAIN_NCS_6): Likewise.
+	(INTERNAL_SYSCALL_NCS): Redefine to call it with 6-arguments.
+
 	* sysdeps/unix/sysv/linux/x86_64/x32/sysdep.h (__syscall_arg_t):
 	Define type for x32.
 	(__SSC): Add platform specific macro.
