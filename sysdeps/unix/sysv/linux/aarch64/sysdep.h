@@ -199,6 +199,14 @@
 # undef INTERNAL_SYSCALL_ERRNO
 # define INTERNAL_SYSCALL_ERRNO(val, err)	(-(val))
 
+#undef SYSCALL_CANCEL_ERROR
+#define SYSCALL_CANCEL_ERROR(__val) \
+  ((unsigned long) (__val) >= (unsigned long) -4095)
+
+#undef SYSCALL_CANCEL_ERRNO
+#define SYSCALL_CANCEL_ERRNO(__val) \
+  (-(__val))
+
 # define LOAD_ARGS_0()				\
   register long _x0 asm ("x0");
 # define LOAD_ARGS_1(x0)			\
