@@ -18,6 +18,27 @@
 #ifndef _LINUX_X32_SYSDEP_H
 #define _LINUX_X32_SYSDEP_H 1
 
+#ifndef __ASSEMBLER__
+#include <libc-internal.h>
+
+typedef long long int __syscall_arg_t;
+
+/* Syscall arguments for x32 follows x86_64 size, however pointers are 32
+   bits in size.  This suppress the GCC warning "cast from pointer to 
+   integer of different size" when calling __syscall_cancel with
+   pointer as arguments.  */
+# define __SSC(__x)						\
+  ({								\
+    __syscall_arg_t __ret;					\
+    DIAG_PUSH_NEEDS_COMMENT;					\
+    DIAG_IGNORE_NEEDS_COMMENT (4.7, "-Wpointer-to-int-cast");	\
+    __ret = (sizeof(1 ? (__x) : 0ULL) < 8 ?			\
+      (unsigned long int) (__x) : (long long int) (__x));	\
+    DIAG_POP_NEEDS_COMMENT;					\
+    __ret;							\
+  })
+#endif
+
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/x86_64/sysdep.h>
 #include <sysdeps/x86_64/x32/sysdep.h>
