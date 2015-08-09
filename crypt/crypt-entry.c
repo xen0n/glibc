@@ -141,6 +141,17 @@ __crypt_r (const char *key, const char *salt,
    * And convert back to 6 bit ASCII
    */
   _ufc_output_conversion_r (res[0], res[1], salt, data);
+
+#ifdef _LIBC
+  /*
+   * Erase key-dependent intermediate data.  Data dependent only on
+   * the salt is not considered sensitive.
+   */
+  explicit_bzero (ktab, sizeof (ktab));
+  explicit_bzero (data->keysched, sizeof (data->keysched));
+  explicit_bzero (res, sizeof (res));
+#endif
+
   return data->crypt_3_buf;
 }
 weak_alias (__crypt_r, crypt_r)
