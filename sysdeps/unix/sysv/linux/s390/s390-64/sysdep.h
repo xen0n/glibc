@@ -250,6 +250,14 @@
 #undef INTERNAL_SYSCALL_ERRNO
 #define INTERNAL_SYSCALL_ERRNO(val, err)	(-(val))
 
+#undef SYSCALL_CANCEL_ERROR
+#define SYSCALL_CANCEL_ERROR(__val)		\
+  ((unsigned long) (__val) >= -4095UL)
+
+#undef SYSCALL_CANCEL_ERRNO
+#define SYSCALL_CANCEL_ERRNO(__val) \
+  (-(__val))
+
 #define DECLARGS_0()
 #define DECLARGS_1(arg1) \
 	register unsigned long gpr2 __asm__ ("2") = (unsigned long)(arg1);
