@@ -86,17 +86,18 @@
     sc_ret;								\
   })
 
-
-#if IS_IN (libc)
-# define __pthread_enable_asynccancel  __libc_enable_asynccancel
-# define __pthread_disable_asynccancel __libc_disable_asynccancel
-#endif
-
-#define SOCKETCALL_CANCEL(name, args...)				\
+#define SOCKETCALL_CANCEL(name, __a1, __a2, __a3, __a4, __a5, __a6)	\
   ({									\
-    int oldtype = LIBC_CANCEL_ASYNC ();					\
-    long int sc_ret = __SOCKETCALL (SOCKOP_##name, args);		\
-    LIBC_CANCEL_RESET (oldtype);					\
+    __syscall_arg_t __args[6] = { __SSC (__a1), __SSC (__a2),		\
+				  __SSC (__a3), __SSC (__a4), 		\
+				  __SSC (__a5), __SSC (__a6) };		\
+    long int sc_ret = SYSCALL_CANCEL_NCS (socketcall, SOCKOP_##name,	\
+					  __args);			\
+    if (SYSCALL_CANCEL_ERROR (sc_ret))					\
+      {									\
+        __set_errno (SYSCALL_CANCEL_ERRNO (sc_ret));			\
+        sc_ret = -1L;							\
+      }									\
     sc_ret;								\
   })
 

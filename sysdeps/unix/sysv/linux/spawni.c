@@ -340,7 +340,10 @@ __spawnix (pid_t * pid, const char *file,
     }
 
   /* Disable asynchronous cancellation.  */
-  int cs = LIBC_CANCEL_ASYNC ();
+#ifdef __libc_ptf_call
+  int cs;
+  __libc_ptf_call(__pthread_setcancelstate, (PTHREAD_CANCEL_DISABLE, &cs), 0);
+#endif
 
   args.file = file;
   args.exec = exec;
@@ -386,7 +389,9 @@ __spawnix (pid_t * pid, const char *file,
 
   __sigprocmask (SIG_SETMASK, &args.oldmask, 0);
 
-  LIBC_CANCEL_RESET (cs);
+#ifdef __libc_ptf_call
+  __libc_ptf_call (__pthread_setcancelstate, (cs, 0), 0);
+#endif
 
   return ec;
 }
