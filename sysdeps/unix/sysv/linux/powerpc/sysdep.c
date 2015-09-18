@@ -26,3 +26,14 @@ __syscall_error (int err_no)
   __set_errno (err_no);
   return -1;
 }
+
+long int
+__syscall_cancel_error (unsigned long err)
+{
+  if (__glibc_unlikely ((err) & (1 << 28)))
+    {
+      __set_errno (-err);
+      return -1;
+    }
+  return err;
+}

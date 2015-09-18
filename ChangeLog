@@ -1,5 +1,19 @@
 2016-05-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/unix/sysv/linux/powerpc/powerpc64/fcntl.c (__libc_fnctl):
+	Remove CANCEL_ASYNC/CANCEL_RESET usage.
+	* sysdeps/unix/sysv/linux/powerpc/powerpc64/sysdep-cancel.h (PSEUDO):
+	Likewise.
+	(PSEUDO_RET): Likewise.
+	(__pthread_get_ip): Add implementation.
+	* sysdeps/unix/sysv/linux/powerpc/powerpc64/sysdep.h 
+	(SYSCALL_CANCEL_ERROR): New define. 
+	(SYSCALL_CANCEL_ERRNO): New define. 
+	* sysdeps/unix/sysv/linux/powerpc/syscall_cancel.S: New file: 
+	cancellable syscall. 
+	* sysdeps/unix/sysv/linux/powerpc/sysdep.c (__syscall_cancel_error):
+	New symbol: cancellable syscall error handler.
+
 	* nptl/Makefile [routines]: Add syscall_cancel object.
 	[libpthread-routines]: Remove cancellation object.
 	(CFLAGS-cancellation.c): Remove -fasynchronous-unwind-tables.
