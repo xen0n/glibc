@@ -1,3 +1,18 @@
+2016-05-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* nptl/Makefile [$(run-built-tests) = yes] (tests-special): Remove
+	tst-cancel-wrappers.sh.
+	* nptl/tst-cancel-wrappers.sh: Remove file.
+	* nptl/tst-cancel4.c (tf_Write): Likewise.
+	(tf_send): Likewise.
+	(cl_fifo): New function: pipe handling for open/open64.
+	(tf_sigpause): Use sigpause instead of __xpg_sigpausea and use
+	SIGINT instead of SIGCANCEL.
+	(tf_open): Use mkfifo to check for early cancel.
+	(tf_open64): New test: check for open64 cancellable syscall.
+	(tf_pread64): New test: check for pread64 cancellable syscall.
+	(tf_pwrite64): New test: check for pwrite64 cancellable syscall.
+
 2016-05-18  Joseph Myers  <joseph@codesourcery.com>
 
 	* math/libm-test.inc: Update comment not to refer to signs of NaNs
@@ -4145,7 +4160,7 @@
 	* iconvdata/ibm937.c: Likewise.
 	* iconvdata/ibm939.c: Likewise.
 
-2015-12-02  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+2015-10-14  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
 	* nptl/tst-cancel20.c (do_one_test): Move the pipe closing after
 	pthread_join.

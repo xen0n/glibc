@@ -38,8 +38,6 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 
-#include "pthreadP.h"
-
 
 /* Since STREAMS are not supported in the standard Linux kernel and
    there we don't advertise STREAMS as supported is no need to test
@@ -117,7 +115,20 @@ cl (void *arg)
   ++cl_called;
 }
 
+/* Named pipe used to check for blocking open.  It should be closed
+   after the cancellation handling.  */
+static char fifoname[] = "/tmp/tst-cancel4-fifo-XXXXXX";
+static int fifofd;
 
+static void
+cl_fifo (void *arg)
+{
+  ++cl_called;
+
+  unlink (fifoname);
+  close (fifofd);
+  fifofd = -1;
+}
 
 static void *
 tf_read  (void *arg)
@@ -247,6 +258,10 @@ tf_write  (void *arg)
   char buf[WRITE_BUFFER_SIZE];
   memset (buf, '\0', sizeof (buf));
   s = write (fd, buf, sizeof (buf));
+  /* The write can return a value higher than 0 (meaning partial write)
+     due to the SIGCANCEL, but the thread may still be pending
+     cancellation.  */
+  pthread_testcancel ();
 
   pthread_cleanup_pop (0);
 
@@ -781,13 +796,7 @@ tf_sigpause (void *arg)
 
   pthread_cleanup_push (cl, NULL);
 
-#ifdef SIGCANCEL
-  /* Just for fun block the cancellation signal.  We need to use
-     __xpg_sigpause since otherwise we will get the BSD version.  */
-  __xpg_sigpause (SIGCANCEL);
-#else
-  pause ();
-#endif
+  sigpause (sigmask (SIGINT));
 
   pthread_cleanup_pop (0);
 
@@ -1143,6 +1152,10 @@ tf_send (void *arg)
   char mem[700000];
 
   send (tempfd2, mem, arg == NULL ? sizeof (mem) : 1, 0);
+  /* Thez send can return a value higher than 0 (meaning partial send)
+     due to the SIGCANCEL, but the thread may still be pending
+     cancellation.  */
+  pthread_testcancel ();
 
   pthread_cleanup_pop (0);
 
@@ -1396,9 +1409,23 @@ static void *
 tf_open (void *arg)
 {
   if (arg == NULL)
-    // XXX If somebody can provide a portable test case in which open()
-    // blocks we can enable this test to run in both rounds.
-    abort ();
+    {
+      fifofd = mkfifo (fifoname, S_IWUSR | S_IRUSR);
+      if (fifofd == -1)
+	{
+	  printf ("%s: mkfifo failed\n", __FUNCTION__);
+	  exit (1);
+	}
+    }
+  else
+    {
+      int r = pthread_barrier_wait (&b2);
+      if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+	{
+	  printf ("%s: barrier_wait failed\n", __FUNCTION__);
+	  exit (1);
+	}
+    }
 
   int r = pthread_barrier_wait (&b2);
   if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
@@ -1407,16 +1434,49 @@ tf_open (void *arg)
       exit (1);
     }
 
-  r = pthread_barrier_wait (&b2);
+  pthread_cleanup_push (cl_fifo, NULL);
+
+  open (arg ? "Makefile" : fifoname, O_RDONLY);
+
+  pthread_cleanup_pop (0);
+
+  printf ("%s: open returned\n", __FUNCTION__);
+
+  exit (1);
+}
+
+static void *
+tf_open64 (void *arg)
+{
+  if (arg == NULL)
+    {
+      fifofd = mkfifo (fifoname, S_IWUSR | S_IRUSR);
+      if (fifofd == -1)
+	{
+	  printf ("%s: mkfifo failed\n", __FUNCTION__);
+	  exit (1);
+	}
+    }
+  else
+    {
+      int r = pthread_barrier_wait (&b2);
+      if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+	{
+	  printf ("%s: barrier_wait failed\n", __FUNCTION__);
+	  exit (1);
+	}
+    }
+
+  int r = pthread_barrier_wait (&b2);
   if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
     {
-      printf ("%s: 2nd barrier_wait failed\n", __FUNCTION__);
+      printf ("%s: barrier_wait failed\n", __FUNCTION__);
       exit (1);
     }
 
-  pthread_cleanup_push (cl, NULL);
+  pthread_cleanup_push (cl_fifo, NULL);
 
-  open ("Makefile", O_RDONLY);
+  open64 (arg ? "Makefile" : fifoname, O_RDONLY);
 
   pthread_cleanup_pop (0);
 
@@ -1510,6 +1570,46 @@ tf_pread (void *arg)
   exit (1);
 }
 
+static void *
+tf_pread64 (void *arg)
+{
+  if (arg == NULL)
+    // XXX If somebody can provide a portable test case in which pread()
+    // blocks we can enable this test to run in both rounds.
+    abort ();
+
+  tempfd = open64 ("Makefile", O_RDONLY);
+  if (tempfd == -1)
+    {
+      printf ("%s: cannot open64 Makefile\n", __FUNCTION__);
+      exit (1);
+    }
+
+  int r = pthread_barrier_wait (&b2);
+  if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+      printf ("%s: barrier_wait failed\n", __FUNCTION__);
+      exit (1);
+    }
+
+  r = pthread_barrier_wait (&b2);
+  if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+      printf ("%s: 2nd barrier_wait failed\n", __FUNCTION__);
+      exit (1);
+    }
+
+  pthread_cleanup_push (cl, NULL);
+
+  char mem[10];
+  pread64 (tempfd, mem, sizeof (mem), 0);
+
+  pthread_cleanup_pop (0);
+
+  printf ("%s: pread64 returned\n", __FUNCTION__);
+
+  exit (1);
+}
 
 static void *
 tf_pwrite (void *arg)
@@ -1554,6 +1654,48 @@ tf_pwrite (void *arg)
   exit (1);
 }
 
+static void *
+tf_pwrite64 (void *arg)
+{
+  if (arg == NULL)
+    // XXX If somebody can provide a portable test case in which pwrite()
+    // blocks we can enable this test to run in both rounds.
+    abort ();
+
+  char fname[] = "/tmp/tst-cancel4-fd-XXXXXX";
+  tempfd = mkstemp (fname);
+  if (tempfd == -1)
+    {
+      printf ("%s: mkstemp failed\n", __FUNCTION__);
+      exit (1);
+    }
+  unlink (fname);
+
+  int r = pthread_barrier_wait (&b2);
+  if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+      printf ("%s: barrier_wait failed\n", __FUNCTION__);
+      exit (1);
+    }
+
+  r = pthread_barrier_wait (&b2);
+  if (r != 0 && r != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+      printf ("%s: 2nd barrier_wait failed\n", __FUNCTION__);
+      exit (1);
+    }
+
+  pthread_cleanup_push (cl, NULL);
+
+  char mem[10];
+  pwrite64 (tempfd, mem, sizeof (mem), 0);
+
+  pthread_cleanup_pop (0);
+
+  printf ("%s: pwrite64 returned\n", __FUNCTION__);
+
+  exit (1);
+}
 
 static void *
 tf_fsync (void *arg)
@@ -2140,10 +2282,13 @@ static struct
   ADD_TEST (recv, 2, 0),
   ADD_TEST (recvfrom, 2, 0),
   ADD_TEST (recvmsg, 2, 0),
-  ADD_TEST (open, 2, 1),
+  ADD_TEST (open, 2, 0),
+  ADD_TEST (open64, 2, 0),
   ADD_TEST (close, 2, 1),
   ADD_TEST (pread, 2, 1),
+  ADD_TEST (pread64, 2, 1),
   ADD_TEST (pwrite, 2, 1),
+  ADD_TEST (pwrite64, 2, 1),
   ADD_TEST (fsync, 2, 1),
   ADD_TEST (fdatasync, 2, 1),
   ADD_TEST (msync, 2, 1),
@@ -2184,6 +2329,12 @@ do_test (void)
       exit (1);
     }
   setsockopt (fds[1], SOL_SOCKET, SO_SNDBUF, &val, sizeof(val));
+
+  if (mktemp (fifoname) == NULL)
+    {
+      printf ("%s: cannot generate temp file name\n", __FUNCTION__);
+      exit (1);
+    }
 
   int result = 0;
   size_t cnt;
