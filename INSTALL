@@ -135,20 +135,31 @@ will be used, and CFLAGS sets optimization options for the compiler.
 '--enable-lock-elision=yes'
      Enable lock elision for pthread mutexes by default.
 
-'--enable-pt_chown'
-     The file 'pt_chown' is a helper binary for 'grantpt' (*note
-     Pseudo-Terminals: Allocation.) that is installed setuid root to fix
-     up pseudo-terminal ownership.  It is not built by default because
-     systems using the Linux kernel are commonly built with the 'devpts'
-     filesystem enabled and mounted at '/dev/pts', which manages
-     pseudo-terminal ownership automatically.  By using
-     '--enable-pt_chown', you may build 'pt_chown' and install it setuid
-     and owned by 'root'.  The use of 'pt_chown' introduces additional
-     security risks to the system and you should enable it only if you
-     understand and accept those risks.
+`--enable-stack-protector'
+`--enable-stack-protector=strong'
+`--enable-stack-protector=all'
+     Compile the C library and all other parts of the glibc package
+     (including the threading and math libraries, NSS modules, and
+     transliteration modules) using the GCC `-fstack-protector',
+     `-fstack-protector-strong' or `-fstack-protector-all' options to
+     detect stack overruns.  Only the dynamic linker and a small number
+     of routines called directly from assembler are excluded from this
+     protection.
 
-'--disable-werror'
-     By default, the GNU C Library is built with '-Werror'.  If you wish
+`--enable-pt_chown'
+     The file `pt_chown' is a helper binary for `grantpt' (*note
+     Pseudo-Terminals: Allocation.) that is installed setuid root to
+     fix up pseudo-terminal ownership.  It is not built by default
+     because systems using the Linux kernel are commonly built with the
+     `devpts' filesystem enabled and mounted at `/dev/pts', which
+     manages pseudo-terminal ownership automatically.  By using
+     `--enable-pt_chown', you may build `pt_chown' and install it
+     setuid and owned by `root'.  The use of `pt_chown' introduces
+     additional security risks to the system and you should enable it
+     only if you understand and accept those risks.
+
+`--disable-werror'
+     By default, the GNU C Library is built with `-Werror'.  If you wish
      to build without this option (for example, if building with a newer
      version of GCC than this version of the GNU C Library was tested
      with, so new warnings cause the build with '-Werror' to fail), you
