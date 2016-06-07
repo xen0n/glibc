@@ -48,9 +48,21 @@ routines  = backtrace backtracesyms backtracesymsfd noophooks \
 	    vdprintf_chk obprintf_chk \
 	    longjmp_chk ____longjmp_chk \
 	    fdelt_chk poll_chk ppoll_chk \
-	    stack_chk_fail fortify_fail \
+	    stack_chk_fail fortify_fail libc-stack_chk_fail_local \
 	    $(static-only-routines)
+
+# stack_chk_fail_local must be non-PIC, thus static-only, but we also
+# want an identical thunk hidden in libc.so to avoid going via the PLT.
+
 static-only-routines := warning-nop stack_chk_fail_local
+shared-only-routines += libc-stack_chk_fail_local
+
+# Building the stack-protector failure routines with stack protection
+# makes no sense.
+
+CFLAGS-stack_chk_fail.c = $(no-stack-protector)
+CFLAGS-stack_chk_fail_local.c = $(no-stack-protector)
+CFLAGS-libc-stack_chk_fail_local.c = $(no-stack-protector)
 
 CFLAGS-backtrace.c = -fno-omit-frame-pointer
 CFLAGS-sprintf_chk.c = $(libio-mtsafe)
