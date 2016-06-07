@@ -296,21 +296,24 @@ extern void **__libc_dl_error_tsd (void) __attribute__ ((const));
 /* This can be set by the debugger before initialization is complete.  */
 static bool __nptl_initial_report_events __attribute_used__;
 
-void
-__pthread_initialize_minimal_internal (void)
-{
 #ifndef SHARED
+void
+__pthread_initialize_tcb_internal (void)
+{
   /* Unlike in the dynamically linked case the dynamic linker has not
      taken care of initializing the TLS data structures.  */
   __libc_setup_tls (TLS_TCB_SIZE, TLS_TCB_ALIGN);
 
-  /* We must prevent gcc from being clever and move any of the
+  /* We must prevent gcc from being clever after inlining and moving any of the
      following code ahead of the __libc_setup_tls call.  This function
      will initialize the thread register which is subsequently
      used.  */
   __asm __volatile ("");
+}
 #endif
-
+void
+__pthread_initialize_minimal_internal (void)
+{
   /* Minimal initialization of the thread descriptor.  */
   struct pthread *pd = THREAD_SELF;
   __pthread_initialize_pids (pd);

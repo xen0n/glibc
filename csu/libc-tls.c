@@ -241,5 +241,13 @@ void
 __attribute__ ((weak))
 __pthread_initialize_minimal (void)
 {
+}
+
+/* This is the minimal initialization function used when libpthread is
+   not used.  */
+void
+__attribute__ ((weak))
+__pthread_initialize_tcb_internal (void)
+{
   __libc_setup_tls (TLS_INIT_TCB_SIZE, TLS_INIT_TCB_ALIGN);
 }
