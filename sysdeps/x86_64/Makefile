@@ -46,6 +46,9 @@ tests-pie += $(quad-pie-test)
 test-extras += tst-quadmod1pie tst-quadmod2pie
 extra-test-objs += tst-quadmod1pie.o tst-quadmod2pie.o
 
+CFLAGS-tst-quad1pie.c = $(no-stack-protector)
+CFLAGS-tst-quad2pie.c = $(no-stack-protector)
+
 $(objpfx)tst-quad1pie: $(objpfx)tst-quadmod1pie.o
 $(objpfx)tst-quad2pie: $(objpfx)tst-quadmod2pie.o
 

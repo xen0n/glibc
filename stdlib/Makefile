@@ -177,6 +177,9 @@ LDFLAGS-tst-putenv = $(no-as-needed)
 
 $(objpfx)tst-putenvmod.so: $(objpfx)tst-putenvmod.os $(link-libc-deps)
 	$(build-module)
+# This is not only not in libc, it's not even linked with it.
+CFLAGS-tst-putenvmod.c += $(no-stack-protector)
+
 libof-tst-putenvmod = extramodules
 
 $(objpfx)bug-getcontext: $(libm)
