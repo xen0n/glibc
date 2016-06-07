@@ -45,6 +45,11 @@ before-compile += $(objpfx)version-info.h
 tests := tst-empty tst-atomic tst-atomic-long
 tests-static := tst-empty
 
+CFLAGS-.o += $(no-stack-protector)
+CFLAGS-.og += $(no-stack-protector)
+CFLAGS-.op += $(no-stack-protector)
+CFLAGS-.os += $(no-stack-protector)
+
 ifeq (yes,$(build-shared))
 extra-objs += S$(start-installed-name) gmon-start.os
 ifneq ($(start-installed-name),$(static-start-installed-name))

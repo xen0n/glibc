@@ -298,6 +298,7 @@ static bool __nptl_initial_report_events __attribute_used__;
 
 #ifndef SHARED
 void
+inhibit_stack_protector
 __pthread_initialize_tcb_internal (void)
 {
   /* Unlike in the dynamically linked case the dynamic linker has not
