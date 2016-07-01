@@ -28,6 +28,9 @@
 #include <libc-internal.h>
 
 #include <ldsodefs.h>
+#if HAVE_TUNABLES
+# include <elf/dl-tunables.h>
+#endif
 
 /* Set nonzero if we have to be prepared for more than one libc being
    used in the process.  Safe assumption if initializer never runs.  */
@@ -73,6 +76,10 @@ _init (int argc, char **argv, char **envp)
 
 #ifndef SHARED
   __libc_init_secure ();
+
+#if HAVE_TUNABLES
+  __tunables_init (envp);
+#endif
 
   /* First the initialization which normally would be done by the
      dynamic linker.  */

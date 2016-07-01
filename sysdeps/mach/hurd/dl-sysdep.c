@@ -44,6 +44,10 @@
 #include <dl-machine.h>
 #include <dl-procinfo.h>
 
+#if HAVE_TUNABLES
+# include <dl-tunables.h>
+#endif
+
 extern void __mach_init (void);
 
 extern int _dl_argc;
@@ -142,6 +146,10 @@ _dl_sysdep_start (void **start_argptr,
 	_dl_hurd_data = (void *) p;
 
       __libc_enable_secure = _dl_hurd_data->flags & EXEC_SECURE;
+
+#if HAVE_TUNABLES
+      __tunables_init (_environ);
+#endif
 
       if (_dl_hurd_data->flags & EXEC_STACK_ARGS &&
 	  _dl_hurd_data->user_entry == 0)

@@ -44,6 +44,10 @@
 #include <hp-timing.h>
 #include <tls.h>
 
+#if HAVE_TUNABLES
+# include <dl-tunables.h>
+#endif
+
 extern char **_environ attribute_hidden;
 extern char _end[] attribute_hidden;
 
@@ -217,6 +221,10 @@ _dl_sysdep_start (void **start_argptr,
 # endif
         GLRO(dl_sysinfo) = new_sysinfo;
     }
+#endif
+
+#if HAVE_TUNABLES
+  __tunables_init (_environ);
 #endif
 
 #ifdef DL_SYSDEP_INIT

@@ -31,6 +31,10 @@
 #include <ldsodefs.h>
 #include <fpu_control.h>
 
+#if HAVE_TUNABLES
+# include <dl-tunables.h>
+#endif
+
 extern void __mach_init (void);
 extern void __init_misc (int, char **, char **);
 #ifdef USE_NONOPTION_FLAGS
@@ -82,6 +86,10 @@ posixland_init (int argc, char **argv, char **envp)
   __libc_argc = argc;
   __libc_argv = argv;
   __environ = envp;
+
+#if HAVE_TUNABLES
+  __tunables_init (__environ);
+#endif
 
 #ifndef SHARED
   _dl_non_dynamic_init ();

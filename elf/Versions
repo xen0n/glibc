@@ -64,5 +64,8 @@ ld {
 
     # Pointer protection.
     __pointer_chk_guard;
+
+    # Set value of a tunable.
+    __tunable_set_val;
   }
 }
