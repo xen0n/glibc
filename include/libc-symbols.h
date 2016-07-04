@@ -314,6 +314,16 @@ for linking")
 
 #define attribute_relro __attribute__ ((section (".data.rel.ro")))
 
+
+/* Used to disable stack protection in sensitive places, like early
+   static TLS init.  */
+#ifdef HAVE_CC_NO_STACK_PROTECTOR
+# define inhibit_stack_protector \
+    __attribute__ ((__optimize__ ("-fno-stack-protector")))
+#else
+# define inhibit_stack_protector
+#endif
+
 /* The following macros are used for PLT bypassing within libc.so
    (and if needed other libraries similarly).
    First of all, you need to have the function prototyped somewhere,
