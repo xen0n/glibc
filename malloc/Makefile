@@ -30,8 +30,8 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-pvalloc tst-memalign tst-mallopt tst-scratch_buffer \
 	 tst-malloc-backtrace tst-malloc-thread-exit \
 	 tst-malloc-thread-fail tst-malloc-fork-deadlock \
-	 tst-mallocfork2
-tests-static := tst-malloc-usable-static
+	 tst-mallocfork2 tst-malloc-usable-tunables
+tests-static := tst-malloc-usable-static tst-malloc-usable-static-tunables
 tests += $(tests-static)
 test-srcs = tst-mtrace
 
@@ -141,6 +141,8 @@ endif
 tst-mcheck-ENV = MALLOC_CHECK_=3
 tst-malloc-usable-ENV = MALLOC_CHECK_=3
 tst-malloc-usable-static-ENV = $(tst-malloc-usable-ENV)
+tst-malloc-usable-tunables-ENV = GLIBC_TUNABLES=glibc.malloc.check=3
+tst-malloc-usable-static-tunables-ENV = $(tst-malloc-usable-tunables-ENV)
 
 # Uncomment this for test releases.  For public releases it is too expensive.
 #CPPFLAGS-malloc.o += -DMALLOC_DEBUG=1
