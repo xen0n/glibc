@@ -102,6 +102,13 @@ __NTH (bzero (void *__dest, size_t __len))
 {
   (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
 }
+
+__fortify_function void
+__NTH (explicit_bzero (void *__dest, size_t __len))
+{
+  (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
+  __glibc_read_memory (__dest, __len);
+}
 #endif
 
 __fortify_function char *

@@ -57,7 +57,7 @@
 # define __bzero(s, n) __builtin_memset (s, '\0', n)
 #endif
 
-#ifdef __USE_MISC
+#if defined __USE_MISC && !defined __fortify_function
 /* As bzero, but the compiler will not delete a call to this
    function, even if S is dead after the call.  Note: this function
    has its own implementation file and should not be slurped into
