@@ -99,6 +99,8 @@ libc_hidden_proto (memmem)
 extern __typeof (memmem) __memmem;
 libc_hidden_proto (__memmem)
 libc_hidden_proto (__ffs)
+extern __typeof (__glibc_read_memory) __internal_glibc_read_memory;
+libc_hidden_proto (__internal_glibc_read_memory)
 
 libc_hidden_builtin_proto (memchr)
 libc_hidden_builtin_proto (memcpy)

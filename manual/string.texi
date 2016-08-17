@@ -34,6 +34,8 @@ too.
 * Search Functions::            Searching for a specific element or substring.
 * Finding Tokens in a String::  Splitting a string into tokens by looking
 				 for delimiters.
+* Erasing Sensitive Data::      Clearing memory which contains sensitive
+                                 data, after it's no longer needed.
 * strfry::                      Function for flash-cooking a string.
 * Trivial Encryption::          Obscuring data.
 * Encode Binary Data::          Encoding and Decoding of Binary Data.
@@ -2373,6 +2375,105 @@ The @code{dirname} function is the compliment to the XPG version of
 by @var{path}.  If @var{path} is @code{NULL}, an empty string, or
 contains no '/' bytes, then "." is returned.  The prototype for this
 function can be found in @file{libgen.h}.
+@end deftypefun
+
+@node Erasing Sensitive Data
+@section Erasing Sensitive Data
+
+It is sometimes necessary to make sure that a block of data in memory
+is erased after use, even if no correct C program could access it
+again.  For instance, a cryptographic key should not be allowed to
+survive on the stack after the program is finished using it, because
+there might be a bug that causes junk stack data, including the key,
+to be revealed to the outside world.  @code{memset} and @code{bzero}
+are not safe to use for this, because the C compiler knows what they
+do, and can delete ``unnecessary'' calls to them.  For this situation,
+@theglibc{} provides @code{explicit_bzero}, which is functionally
+identical to @code{bzero}, except that the C compiler will @emph{not}
+delete apparently-unnecessary calls.
+
+@comment string.h
+@comment BSD
+@deftypefun void explicit_bzero (void *@var{block}, size_t @var{len})
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+
+@code{explicit_bzero} writes zero into each of the first @var{len}
+bytes of the object beginning at @var{block}, just as @code{bzero}
+would.  The compiler will not delete a call to this function, even
+if the object beginning at @var{block} is never referred to again.
+
+@smallexample
+#include <string.h>
+
+extern void encrypt (const char *key, const char *in,
+                     char *out, size_t n);
+extern void genkey (const char *phrase, char *key);
+
+void encrypt_with_phrase (const char *phrase, const char *in,
+                          char *out, size_t n)
+@{
+  char key[16];
+  genkey (phrase, key);
+  encrypt (key, in, out, n);
+  explicit_bzero (key, 16);
+@}
+@end smallexample
+
+@noindent
+If @code{bzero} or @code{memset} had been used in this function, the C
+compiler might remove it as unnecessary, but it will not do this with
+@code{explicit_bzero}.
+
+@strong{Warning:} The @emph{only} optimization disabled by
+@code{explicit_bzero} is removal of ``unnecessary'' calls.  In all
+other respects, the compiler is allowed to optimize as it would for
+@code{memset}.  For instance, it may deduce that @var{block} cannot be
+a null pointer, and propagate this information both forward and
+backward in control flow.
+
+@strong{Warning:} The compiler is free to make additional copies of
+any object, or parts of it, in temporary storage areas (such as
+registers and ``scratch'' stack space).  @code{explicit_bzero} does
+not guarantee that temporary copies of sensitive data are destroyed.
+In fact, in some situations, using @code{explicit_bzero} will
+@emph{cause} creation of an additional copy, and only that copy will
+be cleared:
+
+@smallexample
+#include <string.h>
+
+struct key @{
+  unsigned long long low;
+  unsigned long long high;
+@};
+
+struct key get_key(void);
+void use_key(struct key);
+
+void
+with_clear(void)
+@{
+  struct key k;
+  k = get_key();
+  use_key(k);
+  explicit_bzero(&k, sizeof(k));
+@}
+@end smallexample
+
+@noindent
+Without the call to @code{explicit_bzero}, @var{k} might not need to
+be stored in memory: depending on the ABI, its value could be returned
+from @code{get_key} and passed to @code{use_key} using only CPU
+registers.  @code{explicit_bzero} operates on memory, so the compiler
+has to make a copy of @var{k} in memory for it, and the copy in the
+CPU registers remains intact.  This can occur for any variable whose
+address is only taken in a call to @code{explicit_bzero}, even if it
+might seem ``too large'' to be stored in registers.
+
+@strong{Portability Note:} This function first appeared in OpenBSD 5.5
+and has not been standardized.  @Theglibc{} declares this function in
+@file{string.h}, but on other systems it may be in @file{strings.h}
+instead.
 @end deftypefun
 
 @node strfry

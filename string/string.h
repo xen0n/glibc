@@ -455,6 +455,15 @@ extern void bcopy (const void *__src, void *__dest, size_t __n)
 /* Set N bytes of S to 0.  */
 extern void bzero (void *__s, size_t __n) __THROW __nonnull ((1));
 
+/* As bzero, but the compiler will not delete a call to this
+   function, even if S is dead after the call.  */
+extern void explicit_bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+
+/* Optimization fence, used by bits/string2.h inline version of
+   explicit_bzero.  */
+extern void __glibc_read_memory (const void *__s, size_t __n)
+     __THROW __nonnull ((1)) __attribute_noinline__;
+
 /* Compare N bytes of S1 and S2 (same as memcmp).  */
 extern int bcmp (const void *__s1, const void *__s2, size_t __n)
      __THROW __attribute_pure__ __nonnull ((1, 2));

@@ -82,4 +82,11 @@ libc {
   }
   GLIBC_2.24 {
   }
+  GLIBC_2.25 {
+    # used by inlines in string2.h
+    __glibc_read_memory;
+
+    # e*
+    explicit_bzero;
+  }
 }

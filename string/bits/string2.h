@@ -52,11 +52,23 @@
 #define __string2_1bptr_p(__x) \
   ((size_t)(const void *)((__x) + 1) - (size_t)(const void *)(__x) == 1)
 
-/* Set N bytes of S to C.  */
+/* Set N bytes of S to 0.  */
 #if !defined _HAVE_STRING_ARCH_memset
 # define __bzero(s, n) __builtin_memset (s, '\0', n)
 #endif
 
+#ifdef __USE_MISC
+/* As bzero, but the compiler will not delete a call to this
+   function, even if S is dead after the call.  Note: this function
+   has its own implementation file and should not be slurped into
+   string-inlines.o.  */
+__extern_inline void
+explicit_bzero (void *__s, size_t __n)
+{
+  memset (__s, '\0', __n);
+  __glibc_read_memory (__s, __n);
+}
+#endif
 
 #ifndef _HAVE_STRING_ARCH_strchr
 extern void *__rawmemchr (const void *__s, int __c);
