@@ -1208,6 +1208,7 @@ case $cpu-$vendor in
 			| mipsisa64sr71k | mipsisa64sr71kel \
 			| mipsr5900 | mipsr5900el \
 			| mipstx39 | mipstx39el \
+			| loongarch32 | loongarch64 \
 			| mmix \
 			| mn10200 | mn10300 \
 			| moxie \
