@@ -27,86 +27,89 @@
   switches only.  Therefore, it does not have to restore anything
   other than the PRESERVED state.  */
 
-    .text
+	.text
 LEAF (__setcontext)
 
-    addi.d  sp, sp, -16
-    st.d    a0, sp, 0   /* Save ucp to stack */
+	addi.d		sp, sp, -16
+	st.d		a0, sp, 0	/* Save ucp to stack */
+
 /* rt_sigprocmask (SIG_SETMASK, &ucp->uc_sigmask, NULL, _NSIG8) */
-    li.d    a3, _NSIG8
-    li.d    a2, 0
-    li.d    a1, UCONTEXT_SIGMASK
-    add.d   a1, a1, a0
-    li.d    a0, SIG_SETMASK
+	li.d		a3, _NSIG8
+	li.d		a2, 0
+	li.d		a1, UCONTEXT_SIGMASK
+	add.d		a1, a1, a0
+	li.d		a0, SIG_SETMASK
 
-    li.d    a7, SYS_ify (rt_sigprocmask)
-    syscall 0
+	li.d		a7, SYS_ify (rt_sigprocmask)
+	syscall		0
 
-    blt a0, $r0, 99f
+	blt		a0, $r0, 99f
 
-    ld.d    t0, sp, 0      /* Load ucp to t0 */
-    cfi_def_cfa (12, 0)
+	ld.d		t0, sp, 0	/* Load ucp to t0 */
+	cfi_def_cfa (12, 0)
 
 #ifndef __loongarch_soft_float
-    ld.w    t1, t0, MCONTEXT_FCSR
+	ld.w		t1, t0, MCONTEXT_FCSR
 
-    RESTORE_FP_REG(fs0,  24, t0)
-    RESTORE_FP_REG(fs1,  25, t0)
-    RESTORE_FP_REG(fs2,  26, t0)
-    RESTORE_FP_REG(fs3,  27, t0)
-    RESTORE_FP_REG(fs4,  28, t0)
-    RESTORE_FP_REG(fs5,  29, t0)
-    RESTORE_FP_REG(fs6,  30, t0)
-    RESTORE_FP_REG(fs7,  31, t0)
+	RESTORE_FP_REG(fs0,  24, t0)
+	RESTORE_FP_REG(fs1,  25, t0)
+	RESTORE_FP_REG(fs2,  26, t0)
+	RESTORE_FP_REG(fs3,  27, t0)
+	RESTORE_FP_REG(fs4,  28, t0)
+	RESTORE_FP_REG(fs5,  29, t0)
+	RESTORE_FP_REG(fs6,  30, t0)
+	RESTORE_FP_REG(fs7,  31, t0)
 
-    movgr2fcsr  $r0, t1
+	movgr2fcsr	$r0, t1
 #endif /* __loongarch_soft_float */
 
-    /* Note the contents of argument registers will be random
-       unless makecontext() has been called.  */
-    RESTORE_INT_REG(ra,   1, t0)
-    RESTORE_INT_REG(sp,   3, t0)
-    RESTORE_INT_REG(a0,   4, t0)
-    RESTORE_INT_REG(a1,   5, t0)
-    RESTORE_INT_REG(a2,   6, t0)
-    RESTORE_INT_REG(a3,   7, t0)
-    RESTORE_INT_REG(a4,   8, t0)
-    RESTORE_INT_REG(a5,   9, t0)
-    RESTORE_INT_REG(a6,  10, t0)
-    RESTORE_INT_REG(a7,  11, t0)
-    RESTORE_INT_REG(x,  21, t0)
-    RESTORE_INT_REG(fp,  22, t0)
-    RESTORE_INT_REG(s0,  23, t0)
-    RESTORE_INT_REG(s1,  24, t0)
-    RESTORE_INT_REG(s2,  25, t0)
-    RESTORE_INT_REG(s3,  26, t0)
-    RESTORE_INT_REG(s4,  27, t0)
-    RESTORE_INT_REG(s5,  28, t0)
-    RESTORE_INT_REG(s6,  29, t0)
-    RESTORE_INT_REG(s7,  30, t0)
-    RESTORE_INT_REG(s8,  31, t0)
-    ld.d    t1, t0, MCONTEXT_PC
-    jirl    $r0,t1,0
+/* Note the contents of argument registers will be random
+   unless makecontext() has been called.  */
+	RESTORE_INT_REG(ra,   1, t0)
+	RESTORE_INT_REG(sp,   3, t0)
+	RESTORE_INT_REG(a0,   4, t0)
+	RESTORE_INT_REG(a1,   5, t0)
+	RESTORE_INT_REG(a2,   6, t0)
+	RESTORE_INT_REG(a3,   7, t0)
+	RESTORE_INT_REG(a4,   8, t0)
+	RESTORE_INT_REG(a5,   9, t0)
+	RESTORE_INT_REG(a6,  10, t0)
+	RESTORE_INT_REG(a7,  11, t0)
+	RESTORE_INT_REG(x,   21, t0)
+	RESTORE_INT_REG(fp,  22, t0)
+	RESTORE_INT_REG(s0,  23, t0)
+	RESTORE_INT_REG(s1,  24, t0)
+	RESTORE_INT_REG(s2,  25, t0)
+	RESTORE_INT_REG(s3,  26, t0)
+	RESTORE_INT_REG(s4,  27, t0)
+	RESTORE_INT_REG(s5,  28, t0)
+	RESTORE_INT_REG(s6,  29, t0)
+	RESTORE_INT_REG(s7,  30, t0)
+	RESTORE_INT_REG(s8,  31, t0)
+
+	ld.d		t1, t0, MCONTEXT_PC
+	jirl		$r0,t1,0
 
 99:
-    addi.d  sp, sp, 16
-    b       __syscall_error
+	addi.d		sp, sp, 16
+	b		__syscall_error
 
 PSEUDO_END (__setcontext)
 weak_alias (__setcontext, setcontext)
 
 LEAF (__start_context)
 
-    /* Terminate call stack by noting ra == 0.  Happily, s0 == 0 here.  */
-    cfi_register (1, 23)
+	/* Terminate call stack by noting ra == 0.  Happily, s0 == 0 here.  */
+	cfi_register (1, 23)
 
-    /* Call the function passed to makecontext.  */
-    jirl    $r1,s1,0
+	/* Call the function passed to makecontext.  */
+	jirl		$r1,s1,0
 
-    /* Invoke subsequent context if present, else exit(0).  */
-    ori     a0, s2, 0
-    beqz    s2, 1f
-    bl      __setcontext
-1:  b       exit
+	/* Invoke subsequent context if present, else exit(0).  */
+	ori		a0, s2, 0
+	beqz		s2, 1f
+	bl		__setcontext
+1:
+	b		exit
 
 PSEUDO_END (__start_context)

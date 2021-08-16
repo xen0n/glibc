@@ -23,30 +23,31 @@
 #endif
 
 ENTRY (__syscall_error)
-    /* Fall through to __syscall_set_errno.  */
+/* Fall through to __syscall_set_errno */
 END (__syscall_error)
 
 /* Non-standard calling convention: argument in a0, return address in t0,
-   and clobber only t1.  */
+   and clobber only t1.
+ */
 ENTRY (__syscall_set_errno)
-    /* We got here because a0 < 0, but only codes in the range [-4095,-1]
-      represent errors.  Otherwise, just return the result normally.  */
 
-    li.d    t1, -4096
-    bgeu    t1, a0, L (out)
-    sub.w   a0, zero, a0
-
+/* We got here because a0 < 0, but only codes in the range [-4095, -1]
+   represent errors.	Otherwise, just return the result normally.
+ */
+	li.d		t1, -4096
+	bgeu		t1, a0, L (out)
+	sub.w		a0, zero, a0
 #if RTLD_PRIVATE_ERRNO
-    la      t1, rtld_errno
+	la		t1, rtld_errno
 #elif defined(__PIC__)
-    la.tls.ie   t1, errno
-    add.d   t1, tp, t1
+	la.tls.ie	t1, errno
+	add.d		t1, tp, t1
 #else
-    la.tls.le   t1, errno
-    add.d   t1, tp, t1
+	la.tls.le	t1, errno
+	add.d		t1, tp, t1
 #endif
-    st.w    a0, t1, 0
-    li.d    a0, -1
+	st.w		a0, t1, 0
+	li.d		a0, -1
 L (out):
-    ret
+	ret
 END (__syscall_set_errno)
