@@ -35,37 +35,38 @@ __libc_start_main (int (*main) (int, char **, char **),
 		   void (*fini) (void),
 		   void (*rtld_fini) (void),
 		   void *stack_end);
-*/
+ */
 
 ENTRY (ENTRY_POINT)
-    /* Terminate call stack by noting ra is undefined.  Use a dummy
-       .cfi_label to force starting the FDE.  */
-    .cfi_label .Ldummy
-    cfi_undefined (1)
-    or      a5, a0, zero /* rtld_fini */
 
-    /* We must get symbol main through GOT table, since main may not be local.
-       For instance: googletest defines main in dynamic library.  */
-    la.got  a0, t0, main
+/* Terminate call stack by noting ra is undefined.  Use a dummy
+   .cfi_label to force starting the FDE.  */
+	.cfi_label .Ldummy
+	cfi_undefined (1)
+	or		a5, a0, zero /* rtld_fini */
+
+/* We must get symbol main through GOT table, since main may not be local.
+   For instance: googletest defines main in dynamic library.  */
+	la.got		a0, t0, main
 #ifdef __loongarch64
-    ld.d    a1, sp, 0
-    addi.d  a2, sp, SZREG
+	ld.d		a1, sp, 0
+	addi.d		a2, sp, SZREG
 #elif defined __loongarch32
-    ld.w    a1, sp, 0
-    addi.w  a2, sp, SZREG
+	ld.w		a1, sp, 0
+	addi.w		a2, sp, SZREG
 #endif
-    /* Adjust $sp for 16-aligned */
-    srli.d  sp, sp, 4
-    slli.d  sp, sp, 4
+	/* Adjust $sp for 16-aligned */
+	srli.d		sp, sp, 4
+	slli.d		sp, sp, 4
 
-    move    a3, zero /* used to be init */
-    move    a4, zero /* used to be fini */
-    or      a6, sp, zero /* stack_end */
+	move		a3, zero /* used to be init */
+	move		a4, zero /* used to be fini */
+	or		a6, sp, zero /* stack_end */
 
-    la.got  ra, t0, __libc_start_main
-    jirl    ra, ra, 0
+	la.got		ra, t0, __libc_start_main
+	jirl		ra, ra, 0
 
-    la.got  ra, t0, abort
-    jirl    ra, ra, 0
+	la.got		ra, t0, abort
+	jirl		ra, ra, 0
 END (ENTRY_POINT)
 

@@ -17,7 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#define _ERRNO_H    1
+#define _ERRNO_H  1
 #include <bits/errno.h>
 
 /* Clone the calling process, but without copying the whole address space.
@@ -27,20 +27,19 @@
 
 ENTRY (__vfork)
 
+	li.d	a0, 0x4111 /* CLONE_VM | CLONE_VFORK | SIGCHLD */
+	add.d   a1, zero, sp
 
-    li.d    a0, 0x4111 /* CLONE_VM | CLONE_VFORK | SIGCHLD */
-    add.d   a1, zero, sp
+	/* Do the system call.  */
+	li.d	a7, __NR_clone
+	syscall	0
 
-    /* Do the system call.  */
-    li.d    a7, __NR_clone
-    syscall 0
+	blt	a0, zero ,L (error)
 
-    blt     a0, zero ,L (error)
-
-    ret
+	ret
 
 L (error):
-    b       __syscall_error
+	b	__syscall_error
 
 END (__vfork)
 
