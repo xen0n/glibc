@@ -21,7 +21,7 @@
 
 #include <bits/endian.h>
 
-#ifdef __loongarch64
+#if _LOONGARCH_SIM == _ABILP64
 #define __SIZEOF_PTHREAD_ATTR_T 56
 #define __SIZEOF_PTHREAD_MUTEX_T 40
 #define __SIZEOF_PTHREAD_MUTEXATTR_T 4
