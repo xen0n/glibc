@@ -63,10 +63,8 @@ typedef struct mcontext_t
   unsigned int __fcsr;
   unsigned int __vcsr;
   unsigned long long __fcc;
-  unsigned long long __scr[4];
+  unsigned long long __sc_scr[4];
   union __loongarch_mc_fp_state __fpregs[32] __attribute__ ((__aligned__ (32)));
-
-  unsigned char __reserved[4096] __attribute__ ((__aligned__ (16)));
 } mcontext_t;
 
 /* Userlevel context.  */
@@ -75,8 +73,8 @@ typedef struct ucontext_t
   unsigned long int __uc_flags;
   struct ucontext_t *uc_link;
   stack_t uc_stack;
-  mcontext_t uc_mcontext;
   sigset_t uc_sigmask;
+  mcontext_t uc_mcontext;
 } ucontext_t;
 
 #endif /* sys/ucontext.h */
