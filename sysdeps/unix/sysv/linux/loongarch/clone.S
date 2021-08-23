@@ -31,6 +31,14 @@
 
 ENTRY (__clone)
 
+	/* Align stack to 16 or 8 bytes per the ABI.  */
+#if _LOONGARCH_SIM == _ABILP64
+	addi.d		t0, zero, -16
+#elif _LOONGARCH_SIM == _ABILP32
+	addi.w		t0, zero, -8
+#endif
+	and		a1, a1, t0
+
 	/* Sanity check arguments.  */
 	beqz		a0, L (invalid) /* No NULL function pointers.  */
 	beqz		a1, L (invalid) /* No NULL stack pointers.  */
