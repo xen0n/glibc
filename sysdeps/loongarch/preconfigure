@@ -2,6 +2,8 @@ case "$machine" in
 loongarch*)
 	base_machine=loongarch
 	machine=loongarch/lp64
+
+        with_fp_cond="!defined __loongarch_soft_float"
 	;;
 esac
 
