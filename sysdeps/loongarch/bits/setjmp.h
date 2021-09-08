@@ -32,8 +32,11 @@ typedef struct __jmp_buf_internal_tag
   /* Callee-saved registers.  */
   long int __regs[9];
 
+#ifndef __loongarch_soft_float
   /* Callee-saved floating point registers.  */
   double __fpregs[8];
+#endif
+
 } __jmp_buf[1];
 
 #endif /* _LOONGARCH_BITS_SETJMP_H */
