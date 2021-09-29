@@ -100,8 +100,7 @@ LEAF(COSF)
 	/* fa0 is SP x; fa1 is DP x */
 	movfr2gr.s	t0, fa0			/* Bits of x */
 	fcvt.d.s	fa1, fa0		/* DP x */
-	li.w		t1, 0x7fffffff
-	and		t0, t0, t1		/* |x| */
+	bstrpick.w	t0, t0, 30, 0		/* |x| */
 	li.w		t1, 0x3f490fdb		/* const Pi/4 */
 	bltu		t0, t1, L(arg_less_pio4)/* |x| < Pi/4 branch */
 	li.w		t1, 0x40e231d6		/* 9*Pi/4 */
