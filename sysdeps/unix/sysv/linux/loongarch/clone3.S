@@ -67,11 +67,10 @@ L (thread_start3):
 
 	/* Align stack to 16 or 8 bytes per the ABI.  */
 #if _LOONGARCH_SIM == _ABILP64
-	addi.d		t0, zero, -16
+	bstrins.d	sp, zero, 3, 0
 #elif _LOONGARCH_SIM == _ABILP32
-	addi.w		t0, zero, -8
+	bstrins.w	sp, zero, 2, 0
 #endif
-	and		sp, sp, t0
 
 	/* Set up arguments for the function call.  */
 	move		a0, a3		/* Argument.  */
