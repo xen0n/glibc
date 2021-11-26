@@ -24,7 +24,7 @@
 #include <sysdeps/generic/sysdep.h>
 
 /* Macros to handle different pointer/register sizes for 32/64-bit code.  */
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 #define PTRLOG 3
 #define SZREG 8
 #define SZFREG 8
