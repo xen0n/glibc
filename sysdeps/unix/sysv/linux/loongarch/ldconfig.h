@@ -18,7 +18,7 @@
 
 #include <sysdeps/generic/ldconfig.h>
 
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 #define SYSDEP_KNOWN_INTERPRETER_NAMES \
   { "/lib64/ld-linux-loongarch-lp64d.so.1", FLAG_ELF_LIBC6 }, \
   { "/lib64/ld-linux-loongarch-lp64s.so.1", FLAG_ELF_LIBC6 },

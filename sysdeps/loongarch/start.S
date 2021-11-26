@@ -48,7 +48,7 @@ ENTRY (ENTRY_POINT)
 /* We must get symbol main through GOT table, since main may not be local.
    For instance: googletest defines main in dynamic library.  */
 	la.got		a0, t0, main
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 	ld.d		a1, sp, 0
 	addi.d		a2, sp, SZREG
 #else

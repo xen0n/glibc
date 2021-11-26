@@ -31,7 +31,7 @@
 ENTRY (_dl_runtime_resolve)
 
 	/* Save arguments to stack. */
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 	addi.d	sp, sp, -FRAME_SIZE
 #else
 #error "32bit LoongArch systems are not supported"
@@ -59,7 +59,7 @@ ENTRY (_dl_runtime_resolve)
 #endif
 
 	/* Update .got.plt and obtain runtime address of callee */
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 	slli.d	a1, t1, 1
 	or	a0, t0, zero
 	add.d	a1, a1, t1
@@ -92,7 +92,7 @@ ENTRY (_dl_runtime_resolve)
 	FREG_L	fa7, sp, 10*SZREG + 7*SZFREG
 #endif
 
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 	addi.d	sp, sp, FRAME_SIZE
 #else
 #error "32bit LoongArch systems are not supported"
