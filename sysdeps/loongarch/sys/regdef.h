@@ -91,10 +91,8 @@
 #define fs6 $f30
 #define fs7 $f31
 
-#elif _LOONGARCH_SIM == _ABILP32
-#error ABILP32
 #else
-#error noABI
+#error "32bit LoongArch systems are not supported"
 #endif
 
 #endif /* _SYS_REGDEF_H */
