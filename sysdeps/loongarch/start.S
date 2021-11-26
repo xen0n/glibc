@@ -51,9 +51,8 @@ ENTRY (ENTRY_POINT)
 #if _LOONGARCH_SIM == _ABILP64
 	ld.d		a1, sp, 0
 	addi.d		a2, sp, SZREG
-#elif _LOONGARCH_SIM == _ABILP32
-	ld.w		a1, sp, 0
-	addi.w		a2, sp, SZREG
+#else
+#error "32bit LoongArch systems are not supported"
 #endif
 	/* Adjust $sp for 16-aligned */
 	srli.d		sp, sp, 4

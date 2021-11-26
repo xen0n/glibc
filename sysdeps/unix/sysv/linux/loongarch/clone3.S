@@ -68,8 +68,8 @@ L (thread_start3):
 	/* Align stack to 16 or 8 bytes per the ABI.  */
 #if _LOONGARCH_SIM == _ABILP64
 	bstrins.d	sp, zero, 3, 0
-#elif _LOONGARCH_SIM == _ABILP32
-	bstrins.w	sp, zero, 2, 0
+#else
+#error "32bit LoongArch systems are not supported"
 #endif
 
 	/* Set up arguments for the function call.  */
