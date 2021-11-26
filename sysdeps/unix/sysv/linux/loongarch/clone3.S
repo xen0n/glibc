@@ -66,7 +66,7 @@ L (thread_start3):
 	cfi_undefined (1)
 
 	/* Align stack to 16 or 8 bytes per the ABI.  */
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 	bstrins.d	sp, zero, 3, 0
 #else
 #error "32bit LoongArch systems are not supported"

@@ -20,7 +20,7 @@
 #ifndef _SYS_REGDEF_H
 #define _SYS_REGDEF_H
 
-#if _LOONGARCH_SIM == _ABILP64
+#ifdef __loongarch_lp64
 #define zero $r0
 #define ra $r1
 #define tp $r2
