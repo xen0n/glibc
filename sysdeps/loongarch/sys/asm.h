@@ -32,16 +32,8 @@
 #define REG_S st.d
 #define FREG_L fld.d
 #define FREG_S fst.d
-#elif _LOONGARCH_SIM == _ABILP32
-#define PTRLOG 2
-#define SZREG 4
-#define SZFREG 4
-#define REG_L ld.w
-#define REG_S st.w
-#define FREG_L fld.w
-#define FREG_S fst.w
 #else
-#error _LOONGARCH_SIM must equal _ABILP32 or _ABILP64
+#error "32bit LoongArch systems are not supported"
 #endif
 
 /* Declare leaf routine.  */

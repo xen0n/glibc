@@ -33,8 +33,8 @@ ENTRY (_dl_runtime_resolve)
 	/* Save arguments to stack. */
 #if _LOONGARCH_SIM == _ABILP64
 	addi.d	sp, sp, -FRAME_SIZE
-#elif _LOONGARCH_SIM == _ABILP32
-	addi.w	sp, sp, -FRAME_SIZE
+#else
+#error "32bit LoongArch systems are not supported"
 #endif
 
 	REG_S	ra, sp, 9*SZREG
@@ -66,13 +66,8 @@ ENTRY (_dl_runtime_resolve)
 	la	a2, _dl_fixup
 	jirl	ra, a2, 0
 	or	t1, v0, zero
-#elif _LOONGARCH_SIM == _ABILP32
-	slli.w	a1, t1, 1
-	or	a0, t0, zero
-	add.w	a1, a1, t1
-	la	a2, _dl_fixup
-	jirl	ra, a2, 0
-	or	t1, v0, zero
+#else
+#error "32bit LoongArch systems are not supported"
 #endif
 
 	/* Restore arguments from stack. */
@@ -99,8 +94,8 @@ ENTRY (_dl_runtime_resolve)
 
 #if _LOONGARCH_SIM == _ABILP64
 	addi.d	sp, sp, FRAME_SIZE
-#elif _LOONGARCH_SIM == _ABILP32
-	addi.w	sp, sp, FRAME_SIZE
+#else
+#error "32bit LoongArch systems are not supported"
 #endif
 
 	/* Invoke the callee. */
