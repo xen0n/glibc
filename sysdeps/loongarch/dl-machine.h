@@ -65,10 +65,8 @@ elf_machine_matches_host (const ElfW (Ehdr) * ehdr)
   if (ehdr->e_machine != EM_LOONGARCH)
     return 0;
 
-#ifdef _ABILP64
+#ifdef __loongarch_lp64
   if ((ehdr->e_flags & EF_LARCH_ABI) != EF_LARCH_ABI_LP64)
-#elif defined _ABILP32
-  if ((ehdr->e_flags & EF_LARCH_ABI) != EF_LARCH_ABI_LP32)
 #else
 #error "Unknown ABI"
 #endif
