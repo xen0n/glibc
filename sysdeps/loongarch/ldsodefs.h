@@ -36,10 +36,6 @@ struct La_loongarch_retval;
 		uintptr_t *, uintptr_t *, const struct La_loongarch_regs *, \
 		struct La_loongarch_retval *, const char *);
 
-/* The LoongArch ABI specifies that the dynamic section has to be read-only.  */
-
-#define DL_RO_DYN_SECTION 1
-
 #include_next <ldsodefs.h>
 
 #endif
