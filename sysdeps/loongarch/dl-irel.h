@@ -1,6 +1,6 @@
-/* Machine-dependent ELF indirect relocation inline functions.  LoongArch
-   version.  Copyright (C) 2021 Free Software Foundation, Inc.  This
-   file is part of the GNU C Library.
+/* Machine-dependent ELF indirect relocation inline functions.
+   Copyright (C) 2021 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public

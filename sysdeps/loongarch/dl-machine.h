@@ -1,5 +1,5 @@
-/* Machine-dependent ELF dynamic relocation inline functions.  LoongArch
-   version.  Copyright (C) 2021 Free Software Foundation, Inc.
+/* Machine-dependent ELF dynamic relocation inline functions.
+   Copyright (C) 2021 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.
 

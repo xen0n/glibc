@@ -1,4 +1,4 @@
-/* Internal math stuff.  LoongArch version.
+/* Internal math stuff.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

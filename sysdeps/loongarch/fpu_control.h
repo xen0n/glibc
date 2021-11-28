@@ -1,4 +1,4 @@
-/* FPU control word bits.  LoongArch version.
+/* FPU control word bits.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

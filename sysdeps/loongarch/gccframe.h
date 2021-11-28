@@ -1,4 +1,4 @@
-/* Definition of object in frame unwind info.  LoongArch version.
+/* Definition of object in frame unwind info.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

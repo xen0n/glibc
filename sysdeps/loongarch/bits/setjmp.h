@@ -1,4 +1,4 @@
-/* Define the machine-dependent type `jmp_buf'.  LoongArch version.
+/* Define the machine-dependent type `jmp_buf'.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

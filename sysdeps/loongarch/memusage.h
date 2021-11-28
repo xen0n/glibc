@@ -1,4 +1,4 @@
-/* Machine-specific definitions for memory usage profiling, LoongArch version.
+/* Machine-specific definitions for memory usage profiling.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

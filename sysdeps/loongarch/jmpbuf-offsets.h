@@ -1,4 +1,4 @@
-/* Private macros for accessing __jmp_buf contents.  LoongArch version.
+/* Private macros for accessing __jmp_buf contents.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

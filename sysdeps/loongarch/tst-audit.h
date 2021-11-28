@@ -1,4 +1,4 @@
-/* Definitions for testing PLT entry/exit auditing.  LoongArch version.
+/* Definitions for testing PLT entry/exit auditing.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
