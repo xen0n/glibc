@@ -2,7 +2,7 @@ sinclude(./aclocal.m4)dnl Autoconf lossage
 GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
 # Local configure fragment for sysdeps/unix/sysv/linux/loongarch.
 
-arch_minimum_kernel=4.15.0
+arch_minimum_kernel=5.15.0
 
 libc_cv_loongarch_int_abi=no
 AC_EGREP_CPP(4 4 4, [__SIZEOF_INT__ __SIZEOF_LONG__ __SIZEOF_POINTER__
