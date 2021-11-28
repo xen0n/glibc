@@ -1,4 +1,5 @@
-/* Copyright (C) 2021 Free Software Foundation, Inc.
+/* LoongArch definitions for signal handling calling conventions.
+   Copyright (C) 2021 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.
 

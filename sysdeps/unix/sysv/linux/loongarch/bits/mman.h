@@ -1,4 +1,4 @@
-/* Definitions for POSIX memory map interface.  Linux/LoongArch version.
+/* Definitions for POSIX memory map interface.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

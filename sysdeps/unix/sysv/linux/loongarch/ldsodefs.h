@@ -1,4 +1,5 @@
-/* Copyright (C) 2021 Free Software Foundation, Inc.
+/* Run-time dynamic linker data structures for loaded ELF shared objects.
+   Copyright (C) 2021 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.
 

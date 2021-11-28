@@ -1,4 +1,4 @@
-/* Old SysV permission definition for Linux.  LoongArch version.
+/* Old SysV permission definition for Linux.
    Copyright (C) 2021 Loongson Technology, Inc.
    This file is part of the GNU C Library.
 

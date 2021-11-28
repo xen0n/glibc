@@ -1,4 +1,4 @@
-/* ldconfig default paths and libraries.  Linux/LoongArch version.
+/* ldconfig default paths and libraries.
    Copyright (C) 2001-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

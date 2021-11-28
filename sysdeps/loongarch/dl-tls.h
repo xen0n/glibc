@@ -1,4 +1,4 @@
-/* Thread-local storage handling in the ELF dynamic linker.  LoongArch version.
+/* Thread-local storage handling in the ELF dynamic linker.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
