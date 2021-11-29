@@ -20,8 +20,7 @@
 
 #ifdef __loongarch_lp64
 #define SYSDEP_KNOWN_INTERPRETER_NAMES \
-  { "/lib64/ld-linux-loongarch-lp64d.so.1", FLAG_ELF_LIBC6 }, \
-  { "/lib64/ld-linux-loongarch-lp64s.so.1", FLAG_ELF_LIBC6 },
+  { "/lib64/ld-linux-loongarch-lp64d.so.1", FLAG_ELF_LIBC6 },
 #else
 #error cannot determine ABI
 #endif
