@@ -64,8 +64,13 @@ typedef struct mcontext_t
   unsigned int __fcsr;
   unsigned int __vcsr;
   unsigned long long __fcc;
-  unsigned long long __sc_scr[4];
+  unsigned long long __scr[4];
   union __loongarch_mc_fp_state __fpregs[32] __attribute__ ((__aligned__ (32)));
+
+  /* Reserved for future scalable vectors */
+  unsigned int __svsize;
+  unsigned long long __svregs[0] __attribute__((__aligned__(16)));
+
 } mcontext_t;
 
 /* Userlevel context.  */
