@@ -26,6 +26,8 @@
 #include <elf/elf.h>
 #include <sys/asm.h>
 #include <dl-tls.h>
+#include <dl-static-tls.h>
+#include <dl-machine-rel.h>
 
 #ifndef _RTLD_PROLOGUE
 # define _RTLD_PROLOGUE(entry)					\
@@ -177,8 +179,9 @@ static inline ElfW (Addr)
    by RELOC_ADDR.  SYM is the relocation symbol specified by R_INFO and
    MAP is the object containing the reloc.  */
 
-auto inline void __attribute__ ((always_inline))
-elf_machine_rela (struct link_map *map, const ElfW (Rela) * reloc,
+static inline void __attribute__ ((always_inline))
+elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
+		  const ElfW (Rela) * reloc,
 		  const ElfW (Sym) * sym,
 		  const struct r_found_version *version,
 		  void *const reloc_addr, int skip_ifunc)
@@ -187,7 +190,7 @@ elf_machine_rela (struct link_map *map, const ElfW (Rela) * reloc,
   const unsigned long int r_type = ELFW (R_TYPE) (r_info);
   ElfW (Addr) *addr_field = (ElfW (Addr) *) reloc_addr;
   const ElfW (Sym) *const __attribute__ ((unused)) refsym = sym;
-  struct link_map *sym_map = RESOLVE_MAP (&sym, version, r_type);
+  struct link_map *sym_map = RESOLVE_MAP (map, scope, &sym, version, r_type);
   ElfW (Addr) value = 0;
   if (sym_map != NULL)
     value = SYMBOL_ADDRESS (sym_map, sym, true) + reloc->r_addend;
@@ -298,15 +301,16 @@ elf_machine_rela (struct link_map *map, const ElfW (Rela) * reloc,
     }
 }
 
-auto inline void __attribute__ ((always_inline))
+static inline void __attribute__ ((always_inline))
 elf_machine_rela_relative (ElfW (Addr) l_addr, const ElfW (Rela) * reloc,
 			   void *const reloc_addr)
 {
   *(ElfW (Addr) *) reloc_addr = l_addr + reloc->r_addend;
 }
 
-auto inline void __attribute__ ((always_inline))
-elf_machine_lazy_rel (struct link_map *map, ElfW (Addr) l_addr,
+static inline void __attribute__ ((always_inline))
+elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
+		      ElfW (Addr) l_addr,
 		      const ElfW (Rela) * reloc, int skip_ifunc)
 {
   ElfW (Addr) *const reloc_addr = (void *) (l_addr + reloc->r_offset);
@@ -337,8 +341,9 @@ elf_machine_lazy_rel (struct link_map *map, ElfW (Addr) l_addr,
 /* Set up the loaded object described by L so its stub function
    will jump to the on-demand fixup code __dl_runtime_resolve.  */
 
-auto inline int __attribute__ ((always_inline))
-elf_machine_runtime_setup (struct link_map *l, int lazy, int profile)
+static inline int __attribute__ ((always_inline))
+elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
+			   int lazy, int profile)
 {
 #ifndef RTLD_BOOTSTRAP
   /* If using PLTs, fill in the first two entries of .got.plt.  */
