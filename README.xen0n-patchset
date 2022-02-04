@@ -1,0 +1,5 @@
+Origin: https://github.com/loongson/glibc/commits/loongarch_2_34_dev_v2.1
+Commit: https://github.com/loongson/glibc/commit/5dcbff2d89bf127cb9464c66a37f6b251dabf267
+Rebased-on: glibc-2.35
+
+Removed the additions and reverts of several assembly-optimized math functions.
