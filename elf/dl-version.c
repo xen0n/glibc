@@ -60,12 +60,29 @@ match_symbol (const char *name, Lmid_t ns, ElfW(Word) hash, const char *string,
   int result = 0;
   struct dl_exception exception;
 
+  /* LoongArch OW: alternate version to match.  */
+  ElfW(Word) alt_hash = 0;
+  const char *alt_string = NULL;
+
   /* Display information about what we are doing while debugging.  */
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_VERSIONS))
     _dl_debug_printf ("\
 checking for version `%s' in file %s [%lu] required by file %s [%lu]\n",
 		      string, DSO_FILENAME (map->l_name),
 		      map->l_ns, name, ns);
+
+  /* LoongArch OW: try GLIBC_2.36 if requesting older versions.  */
+  switch (hash)
+    {
+    case 0x0d696910: /* GLIBC_2.0 */
+    case 0x0d696912: /* GLIBC_2.2 */
+    case 0x09691973: /* GLIBC_2.3.3 */
+    case 0x06969187: /* GLIBC_2.27 */
+    case 0x06969188: /* GLIBC_2.28 */
+      alt_hash = 0x069691b6;
+      alt_string = "GLIBC_2.36";
+      break;
+    }
 
   if (__glibc_unlikely (map->l_info[VERSYMIDX (DT_VERDEF)] == NULL))
     {
@@ -111,6 +128,18 @@ checking for version `%s' in file %s [%lu] required by file %s [%lu]\n",
 
 	  /* To be safe, compare the string as well.  */
 	  if (__builtin_expect (strcmp (string, strtab + aux->vda_name), 0)
+	      == 0)
+	    /* Bingo!  */
+	    return 0;
+	}
+
+      /* LoongArch OW: also check for alternative hash.  */
+      if (alt_hash != 0 && alt_hash == def->vd_hash)
+	{
+	  ElfW(Verdaux) *aux = (ElfW(Verdaux) *) ((char *) def + def->vd_aux);
+
+	  /* To be safe, compare the string as well.  */
+	  if (__builtin_expect (strcmp (alt_string, strtab + aux->vda_name), 0)
 	      == 0)
 	    /* Bingo!  */
 	    return 0;

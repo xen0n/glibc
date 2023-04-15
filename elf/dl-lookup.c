@@ -114,12 +114,37 @@ check_match (const char *const undef_name,
 	  /* We can match the version information or use the
 	     default one if it is not hidden.  */
 	  ElfW(Half) ndx = verstab[symidx] & 0x7fff;
-	  if ((map->l_versions[ndx].hash != version->hash
-	       || strcmp (map->l_versions[ndx].name, version->name))
-	      && (version->hidden || map->l_versions[ndx].hash
-		  || (verstab[symidx] & 0x8000)))
-	    /* It's not the version we want.  */
-	    return NULL;
+
+	  /* LoongArch OW: check if we need alternatives here too.  */
+	  switch (version->hash)
+	    {
+	    case 0x0d696910: /* GLIBC_2.0 */
+	    case 0x0d696912: /* GLIBC_2.2 */
+	    case 0x09691973: /* GLIBC_2.3.3 */
+	    case 0x06969187: /* GLIBC_2.27 */
+	    case 0x06969188: /* GLIBC_2.28 */
+	      struct r_found_version alt_ver = {
+		.hash = 0x069691b6,
+		.name = "GLIBC_2.36",
+	      };
+
+	      if ((map->l_versions[ndx].hash != alt_ver.hash
+		   || strcmp (map->l_versions[ndx].name, alt_ver.name))
+		  && (version->hidden || map->l_versions[ndx].hash
+		      || (verstab[symidx] & 0x8000)))
+		/* It's not the version we want.  */
+		return NULL;
+
+	      break;
+
+	    default:
+	      if ((map->l_versions[ndx].hash != version->hash
+		   || strcmp (map->l_versions[ndx].name, version->name))
+		  && (version->hidden || map->l_versions[ndx].hash
+		      || (verstab[symidx] & 0x8000)))
+		/* It's not the version we want.  */
+		return NULL;
+	    }
 	}
     }
   else

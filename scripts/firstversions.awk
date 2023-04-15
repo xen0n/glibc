@@ -67,8 +67,12 @@ $1 == "}" {
       # This version was the specified earliest version itself.
       print;
     else if (vers_compare($1, v) < 0) {
-      # This version is older than the specified earliest version.
-      print "  " $1, "=", v;
+      if (thislib == "ld" && $1 == "GLIBC_2.27") {
+        print "  " $1;
+      } else {
+        # This version is older than the specified earliest version.
+        print "  " $1, "=", v;
+      }
       # Record that V has been referred to, so we will be sure to emit it
       # if we hit a later one without hitting V itself.
       usedversion[thislib, v] = 1;
