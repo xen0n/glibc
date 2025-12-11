@@ -44,10 +44,10 @@ ENTRY (__clone)
 	REG_S		a3, a1, SZREG   /* Save argument pointer.  */
 
 	/* The syscall expects the args to be in different slots.  */
-	or		a0, a2, zero
-	or		a2, a4, zero
-	or		a3, a6, zero
-	or		a4, a5, zero
+	move		a0, a2
+	move		a2, a4
+	move		a3, a6
+	move		a4, a5
 
 	/* Do the system call.  */
 	LI		a7,__NR_clone

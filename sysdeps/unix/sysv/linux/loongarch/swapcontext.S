@@ -21,10 +21,10 @@
 /* int swapcontext (ucontext_t *oucp, const ucontext_t *ucp) */
 
 LEAF (__swapcontext)
-	ori		a2, sp, 0		/* Save sp to a2 */
+	move		a2, sp		/* Save sp to a2 */
 	addi.d		sp, sp, -16
 	st.d		a1, sp, 0
-	ori		t0, a1, 0
+	move		t0, a1
 
 	SAVE_INT_REG (ra,   1, a0)
 	SAVE_INT_REG (a2,   3, a0)		/* Store sp */

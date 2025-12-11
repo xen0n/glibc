@@ -91,7 +91,7 @@ LEAF (__start_context)
 	jirl		$r1,s1,0
 
 	/* Invoke subsequent context if present, else exit(0).  */
-	ori		a0, s2, 0
+	move		a0, s2
 	beqz		s2, 1f
 	bl		__setcontext
 1:

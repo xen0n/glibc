@@ -107,10 +107,10 @@ static inline ElfW (Addr) elf_machine_dynamic (void)
 	" _RTLD_PROLOGUE (ENTRY_POINT) "\
 	.cfi_label .Ldummy   \n\
 	" CFI_UNDEFINED (1) "   \n\
-	or	$a0, $sp, $zero   \n\
+	move	$a0, $sp   \n\
 	bl	_dl_start   \n\
 	# Stash user entry point in s0.   \n\
-	or	$s0, $a0, $zero   \n\
+	move	$s0, $a0   \n\
 	# Load the original argument count.   \n\
 	ld.d	$a1, $sp, 0   \n\
 	# Call _dl_init (struct link_map *main_map, int argc, \
@@ -122,13 +122,13 @@ static inline ElfW (Addr) elf_machine_dynamic (void)
 	add.d	$a3, $a3, $a2   \n\
 	addi.d	$a3, $a3, 8   \n\
 	# Stash the stack pointer in s1.\n\
-	or	$s1, $sp, $zero	\n\
+	move	$s1, $sp\n\
 	# Adjust $sp for 16-aligned   \n\
 	bstrins.d	$sp, $zero, 3, 0  \n\
 	# Call the function to run the initializers.   \n\
 	bl	_dl_init   \n\
 	# Restore the stack pointer for _start.\n\
-	or	$sp, $s1, $zero	 \n\
+	move	$sp, $s1 \n\
 	# Pass our finalizer function to _start.   \n\
 	la	$a0, _dl_fini   \n\
 	# Jump to the user entry point.   \n\

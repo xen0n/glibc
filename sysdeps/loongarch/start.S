@@ -58,7 +58,7 @@ ENTRY (ENTRY_POINT)
    .cfi_label to force starting the FDE.  */
 	.cfi_label .Ldummy
 	cfi_undefined (1)
-	or		a5, a0, zero /* rtld_fini */
+	move		a5, a0 /* rtld_fini */
 
 	la.pcrel	a0, t0, main
 	REG_L		a1, sp, 0
@@ -69,7 +69,7 @@ ENTRY (ENTRY_POINT)
 
 	move		a3, zero /* used to be init */
 	move		a4, zero /* used to be fini */
-	or		a6, sp, zero /* stack_end */
+	move		a6, sp /* stack_end */
 
 	la.pcrel	ra, t0, __libc_start_main
 	jirl		ra, ra, 0

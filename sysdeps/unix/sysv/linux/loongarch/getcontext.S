@@ -42,7 +42,7 @@ LEAF (__getcontext)
 	li.d		a3, _NSIG8
 	li.d		a2, UCONTEXT_SIGMASK
 	add.d		a2, a2, a0
-	ori		a1, zero,0
+	move		a1, zero
 	li.d		a0, SIG_BLOCK
 
 	li.d		a7, SYS_ify (rt_sigprocmask)

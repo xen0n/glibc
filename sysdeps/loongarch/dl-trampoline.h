@@ -74,11 +74,11 @@ ENTRY (_dl_runtime_resolve)
 
 	/* Update .got.plt and obtain runtime address of callee */
 	SLLI	a1, t1, 1
-	or	a0, t0, zero
+	move	a0, t0
 	ADD	a1, a1, t1
 	la	a2, _dl_fixup
 	jirl	ra, a2, 0
-	or	t1, a0, zero
+	move	t1, a0
 
 	/* Restore arguments from stack. */
 	REG_L	ra, sp, 0*SZREG
@@ -162,7 +162,7 @@ ENTRY (_dl_runtime_profile)
 	REG_S	ra, sp, 0
 	REG_S	fp, sp, 8
 
-	or	fp, sp, zero
+	move	fp, sp
 
 	REG_S	a0, fp, OFFSET_RG + DL_OFFSET_RG_A0 + 0*SZREG
 	REG_S	a1, fp, OFFSET_RG + DL_OFFSET_RG_A0 + 1*SZREG
@@ -204,9 +204,9 @@ ENTRY (_dl_runtime_profile)
 
 	/* Update .got.plt and obtain runtime address of callee.  */
 	SLLI	a1, t1, 1
-	or	a0, t0, zero
+	move	a0, t0
 	ADD	a1, a1, t1
-	or	a2, ra, zero		/* return addr */
+	move	a2, ra			/* return addr */
 	ADDI	a3, fp, OFFSET_RG	/* La_loongarch_regs pointer */
 	ADDI	a4, fp, OFFSET_FS 	/* frame size return from pltenter */
 
@@ -220,7 +220,7 @@ ENTRY (_dl_runtime_profile)
 	bge	t3, zero, 1f
 
 	/* Save the return.  */
-	or	t4, a0, zero
+	move	t4, a0
 
 	/* Restore arguments from stack.  */
 	REG_L	a0, fp, OFFSET_RG + DL_OFFSET_RG_A0 + 0*SZREG
@@ -274,9 +274,9 @@ ENTRY (_dl_runtime_profile)
 
 	REG_S	a0, fp, OFFSET_T1
 
-	or	a0, sp, zero
+	move	a0, sp
 	ADDI	a1, fp, SF_SIZE
-	or	a2, t3,	zero
+	move	a2, t3
 	la	t5, memcpy
 	jirl	ra, t5, 0
 
@@ -361,7 +361,7 @@ ENTRY (_dl_runtime_profile)
 
 	/* RA from within La_loongarch_reg.  */
 	REG_L   ra, fp, OFFSET_RG + DL_OFFSET_RG_RA
-	or	sp, fp, zero
+	move	sp, fp
 	ADDI	sp, sp, SF_SIZE
 	REG_S   fp, fp, SZREG
 
