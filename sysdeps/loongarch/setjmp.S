@@ -39,7 +39,7 @@ ENTRY (__sigsetjmp)
 	REG_S ra, a0, 0*SZREG
 	REG_S sp, a0, 1*SZREG
 #endif
-	REG_S x,  a0, 2*SZREG
+	REG_S r21,a0, 2*SZREG
 	REG_S fp, a0, 3*SZREG
 	REG_S s0, a0, 4*SZREG
 	REG_S s1, a0, 5*SZREG
@@ -63,7 +63,7 @@ ENTRY (__sigsetjmp)
 #endif
 
 #if !IS_IN (libc) && IS_IN(rtld)
-	li.w		v0, 0
+	li.w		a0, 0
 	jirl		zero, ra, 0
 #else
 	b		__sigjmp_save

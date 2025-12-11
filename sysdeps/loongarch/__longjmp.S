@@ -30,7 +30,7 @@ ENTRY (__longjmp)
 	REG_L ra, a0, 0*SZREG
 	REG_L sp, a0, 1*SZREG
 #endif
-	REG_L x,  a0, 2*SZREG
+	REG_L r21,a0, 2*SZREG
 	REG_L fp, a0, 3*SZREG
 	REG_L s0, a0, 4*SZREG
 	REG_L s1, a0, 5*SZREG

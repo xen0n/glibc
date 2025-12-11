@@ -32,8 +32,6 @@
 #define a5 $r9
 #define a6 $r10
 #define a7 $r11
-#define v0 $r4
-#define v1 $r5
 #define t0 $r12
 #define t1 $r13
 #define t2 $r14
@@ -43,7 +41,7 @@
 #define t6 $r18
 #define t7 $r19
 #define t8 $r20
-#define x $r21
+#define r21 $r21
 #define fp $r22
 #define s0 $r23
 #define s1 $r24
@@ -63,8 +61,6 @@
 #define fa5 $f5
 #define fa6 $f6
 #define fa7 $f7
-#define fv0 $f0
-#define fv1 $f1
 #define ft0 $f8
 #define ft1 $f9
 #define ft2 $f10
