@@ -123,7 +123,7 @@ ENTRY (_dl_runtime_resolve)
 	ADDI	sp, sp, FRAME_SIZE
 
 	/* Invoke the callee. */
-	jirl	zero, t1, 0
+	jr	t1
 END (_dl_runtime_resolve)
 
 #ifdef SHARED
@@ -265,7 +265,7 @@ ENTRY (_dl_runtime_profile)
 	REG_L   fp, fp, SZREG
 
 	ADDI	sp, sp, SF_SIZE
-	jirl	zero, t4, 0
+	jr	t4
 
 1:
 	/* The new frame size is in t3.  */
@@ -365,7 +365,7 @@ ENTRY (_dl_runtime_profile)
 	ADDI	sp, sp, SF_SIZE
 	REG_S   fp, fp, SZREG
 
-	jirl	zero, ra, 0
+	ret
 
 END (_dl_runtime_profile)
 #endif /* SHARED */

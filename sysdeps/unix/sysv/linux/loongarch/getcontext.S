@@ -49,7 +49,7 @@ LEAF (__getcontext)
 	syscall		0
 	blt		a0, zero, 99f
 
-	jirl		$r0, $r1, 0
+	ret
 
 99:
 	b		__syscall_error

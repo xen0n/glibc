@@ -26,7 +26,6 @@
 #ifdef __ASSEMBLER__
 
 #include <sys/asm.h>
-#define ret jirl zero, ra, 0
 #define L(label) .L##label
 
 /* Performs a system call, handling errors by setting errno.  Linux indicates

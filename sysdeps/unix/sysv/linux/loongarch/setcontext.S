@@ -73,7 +73,7 @@ LEAF (__setcontext)
 	RESTORE_INT_REG(s8,  31, t0)
 
 	ld.d		t1, t0, MCONTEXT_PC
-	jirl		$r0,t1,0
+	jr		t1
 
 99:
 	addi.d		sp, sp, 16
@@ -88,7 +88,7 @@ LEAF (__start_context)
 	cfi_register (1, 23)
 
 	/* Call the function passed to makecontext.  */
-	jirl		$r1,s1,0
+	jirl		ra, s1, 0
 
 	/* Invoke subsequent context if present, else exit(0).  */
 	move		a0, s2

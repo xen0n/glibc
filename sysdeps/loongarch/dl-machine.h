@@ -132,7 +132,7 @@ static inline ElfW (Addr) elf_machine_dynamic (void)
 	# Pass our finalizer function to _start.   \n\
 	la	$a0, _dl_fini   \n\
 	# Jump to the user entry point.   \n\
-	jirl	$zero, $s0, 0   \n\
+	jr	$s0   \n\
 	" _RTLD_EPILOGUE (ENTRY_POINT) "\
 	.previous");
 

@@ -55,6 +55,6 @@ ENTRY (__longjmp)
 
 	sltui	a0, a1, 1
 	ADD	a0, a0, a1	 # a0 = (a1 == 0) ? 1 : a1
-	jirl	zero, ra, 0
+	ret
 
 END (__longjmp)

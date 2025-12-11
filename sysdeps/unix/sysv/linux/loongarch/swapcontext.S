@@ -83,7 +83,7 @@ LEAF (__swapcontext)
 	RESTORE_INT_REG (s8,  31, t0)
 
 	ld.d		t1, t0, MCONTEXT_PC
-	jirl		$r0, t1, 0
+	jr		t1
 
 
 99:
